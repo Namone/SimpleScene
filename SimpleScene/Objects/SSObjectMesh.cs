@@ -43,10 +43,7 @@ namespace SimpleScene
         private void _setupMesh() {
             if (_mesh != null) {
                 // compute and setup bounding sphere
-                float radius = 0f;
-                foreach(var point in _mesh.EnumeratePoints()) {
-	                radius = Math.Max(radius,point.Length);
-                }
+                float radius = computeRadius();
 				this.boundingSphere = new SSObjectSphere(radius);
 				this.Changed += (sender) => { 
 					this.boundingSphere.Pos = this.Pos;
@@ -59,6 +56,14 @@ namespace SimpleScene
 				// notify listeners..
 				ObjectChanged(); 
 			} 
+        }
+
+        protected virtual float computeRadius() {
+            float ret = 0f;
+            foreach (var point in _mesh.EnumeratePoints()) {
+                ret = Math.Max(ret, point.Length);
+            }
+            return ret;
         }
 			
 		public override bool PreciseIntersect (ref SSRay worldSpaceRay, ref float distanceAlongRay)
