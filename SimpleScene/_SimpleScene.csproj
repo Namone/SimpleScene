@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Objects\SSObjectGDISurface.cs" />
+    <Compile Include="Objects\SSObjectMeshDriftLines.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SSObject.cs" />
     <Compile Include="SSScene.cs" />
@@ -99,7 +100,5 @@
     <Compile Include="Core\SSShaderProgram_Main.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Meshes\Shapes\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -9,14 +9,17 @@ namespace SimpleScene
 {
 	public class SSCameraThirdPerson : SSCamera
 	{
-		public SSObject FollowTarget;
+		protected readonly SSObject m_followTarget = null;
+        protected readonly SSObjectMeshDriftLines m_driftLines = null;
 		public float followDistance = 10.0f;
 		public float minFollowDistance = 0.5f;
 		public float maxFollowDistance = 500.0f;
 		public Vector3 basePos;
 
-		public SSCameraThirdPerson (SSObject followTarget) : base() {
-			this.FollowTarget = followTarget;			
+        public SSCameraThirdPerson (SSObject followTarget, SSObjectMeshDriftLines driftLines = null)
+            : base() {
+			m_followTarget = followTarget;
+            m_driftLines = driftLines;
 		}
 		public SSCameraThirdPerson() : base() {
 		}
@@ -27,8 +30,8 @@ namespace SimpleScene
 		public override void Update(float timeDelta) {
 			Vector3 targetPos = basePos;
 			// FPS follow the target
-			if (this.FollowTarget != null) {
-				targetPos = this.FollowTarget.Pos;
+			if (this.m_followTarget != null) {
+				targetPos = this.m_followTarget.Pos;
 			} 
 			
 			followDistance = OpenTKHelper.Clamp(followDistance,minFollowDistance,maxFollowDistance);
@@ -43,6 +46,11 @@ namespace SimpleScene
 			// Console.WriteLine("Camera Up {0} / Dir {1} / Right {2}",this.Up,this.Dir,this.Right);
 			// Console.WriteLine("Camera Pos = {0}",this.Pos);
 			base.Update(timeDelta);
+            
+            if (m_driftLines != null) {
+                m_driftLines.Pos = this.Pos;
+                m_driftLines.Update(timeDelta);
+            }
 		}
 	}
 }

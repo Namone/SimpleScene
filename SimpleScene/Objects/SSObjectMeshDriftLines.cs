@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SimpleScene
 {
-    class SSObjectMeshDriftLines : SSObjectMesh
+    public class SSObjectMeshDriftLines : SSObjectMesh
     {
         public SSObjectMeshDriftLines(SSAbstractMesh mesh) : base(mesh) { }
 
