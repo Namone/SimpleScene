@@ -14,6 +14,11 @@ namespace SimpleScene
             GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.NormalArray);
+
+            //GL.Disable(EnableCap.DepthTest);
+            GL.DepthMask(false);
+            //GL.Disable(EnableCap.DepthClamp);
+
             Mesh.RenderMesh(ref renderConfig);
             GL.PopClientAttrib();
         }
