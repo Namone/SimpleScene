@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -62,11 +62,15 @@ namespace SimpleScene
 		public event BeforeRenderObjectHandler BeforeRenderObject;
 		#endregion
 
+        private Stopwatch m_stopWatch = new Stopwatch();
 
 		public void Update() {
-			// update all objects.. TODO: add elapsed time since last update..
+			// update all objects.. 
+            TimeSpan span = new TimeSpan(m_stopWatch.ElapsedTicks);
+            float timeElapsed = (float)span.TotalMilliseconds * 1000.0f;
+            m_stopWatch.Restart();
 			foreach (var obj in objects) {
-				obj.Update ();
+				obj.Update (timeElapsed);
 			}
 		}
 
