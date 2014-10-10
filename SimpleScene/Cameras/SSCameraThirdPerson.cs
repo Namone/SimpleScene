@@ -52,6 +52,13 @@ namespace SimpleScene
                 m_driftLines.Update(timeDelta);
             }
 		}
+
+        public override void Render(ref SSRenderConfig renderConfig) {
+            base.Render(ref renderConfig);
+            if (m_driftLines != null) {
+                m_driftLines.Render(ref renderConfig);
+            }
+        }
 	}
 }
 
