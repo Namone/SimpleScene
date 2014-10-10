@@ -19,6 +19,9 @@ namespace SimpleScene
 		public bool TraverseTriangles(traverseFn<Object> fn) {
 			return this.TraverseTriangles<Object>(new Object(), fn);
 		}
+
+        public virtual void SetPos(Vector3 pos) { }
+        public virtual void Update(float timeDelta) { }
 	}
 
 }
