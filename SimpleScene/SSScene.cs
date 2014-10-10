@@ -62,15 +62,10 @@ namespace SimpleScene
 		public event BeforeRenderObjectHandler BeforeRenderObject;
 		#endregion
 
-        private Stopwatch m_stopWatch = new Stopwatch();
-
-		public void Update() {
+		public void Update(float timeDelta) {
 			// update all objects.. 
-            TimeSpan span = new TimeSpan(m_stopWatch.ElapsedTicks);
-            float timeElapsed = (float)span.TotalMilliseconds * 1000.0f;
-            m_stopWatch.Restart();
 			foreach (var obj in objects) {
-				obj.Update (timeElapsed);
+				obj.Update (timeDelta);
 			}
 		}
 
