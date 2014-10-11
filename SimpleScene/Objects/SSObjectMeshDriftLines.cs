@@ -25,8 +25,7 @@ namespace SimpleScene
 
         public override void Update(float timeDelta) {
             base.Update(timeDelta);
-            Mesh.SetPos(this.Pos);
-            Mesh.Update(timeDelta);
+            Mesh.Update(timeDelta, this.Pos);
         }
     }
 }

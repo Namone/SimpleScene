@@ -20,8 +20,7 @@ namespace SimpleScene
 			return this.TraverseTriangles<Object>(new Object(), fn);
 		}
 
-        public virtual void SetPos(Vector3 pos) { }
-        public virtual void Update(float timeDelta) { }
+        public virtual void Update(float timeDelta, Vector3 pos) { }
 	}
 
 }
