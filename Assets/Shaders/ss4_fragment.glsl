@@ -42,9 +42,33 @@ varying vec4 f_shadowMapCoords[MAX_NUM_SHADOWMAPS];
 // http://www.clockworkcoders.com/oglsl/tutorial5.htm
 // http://www.ozone3d.net/tutorials/bump_mapping_p4.php
 
-float rand(vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+//float rand(vec2 co){
+//    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+//}
+
+float rand(vec4 seed4) {
+    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
 }
+
+vec2 poissonDisk[16] = vec2[] (
+    vec2(-0.04770581f, 0.1478396f),
+    vec2(0.3363894f, 0.4504989f),
+    vec2(-0.2229154f, 0.66614f),
+    vec2(0.2214093f, -0.218469f),
+    vec2(0.6464681f, 0.0007115538f),
+    vec2(-0.4084882f, -0.2793796f),
+    vec2(-0.6255119f, 0.1134195f),
+    vec2(0.5613756f, -0.4556728f),
+    vec2(0.7622108f, 0.4088926f),
+    vec2(-0.01734736f, -0.7944852f),
+    vec2(-0.8065997f, -0.4794133f),
+    vec2(0.4379586f, 0.8250926f),
+    vec2(0.3348362f, -0.9189008f),
+    vec2(-0.3919142f, -0.9179187f),
+    vec2(0.02141847f, 0.9828521f),
+    vec2(-0.6499051f, 0.5785806f)    
+ );
 
 
 vec4 linearTest(vec4 outputColor) {
@@ -127,19 +151,27 @@ void main()
 	vec4 glowColor    = (ambiTexEnabled == 1) ? texture2D (ambiTex, gl_TexCoord[0].st) : vec4(0);
 	vec4 specTex      = (specTexEnabled == 1) ? texture2D (specTex, gl_TexCoord[0].st) : vec4(0);
 
-    // shadowmap test
     float shadeFactor = 1.0;
+    vec3 seed3 = f_vertexPosition_objectspace.xyz * 1000.0;
+	const float DEPTH_OFFSET = 0.01;
+    int numPoissionSamples = 16;
+    float sampleShadeFactor = 0.6 / numPoissionSamples;
+    
 	for (int i = 0; i < numShadowMaps; ++i) {
-    	vec2 shadowMapUV = f_shadowMapCoords[i].xy;
-	    vec4 shadowMapTexel = texture2D(shadowMapTextures[i], shadowMapUV);
-	    float nearestOccluder = shadowMapTexel.x;
+        vec2 shadowMapUV = f_shadowMapCoords[i].xy;
 	    float distanceToTexel = f_shadowMapCoords[i].z;
-		float DEPTH_OFFSET = 0.01;
+        
+        for (int p = 0; p < numPoissionSamples; ++p) {
+            int index = int(16.0*rand(vec4(seed3, p)))%16;
+            vec2 offset = poissonDisk[p]/700.0;
+            vec4 shadowMapTexel = texture2D(shadowMapTextures[i], shadowMapUV + offset);
+            float nearestOccluder = shadowMapTexel.x;
 		
-	    if (nearestOccluder < (distanceToTexel - DEPTH_OFFSET)) {
-			shadeFactor = 0.5;
-	    }
-	}	
+            if (nearestOccluder < (distanceToTexel - DEPTH_OFFSET)) {
+                shadeFactor -= sampleShadeFactor;           
+            }
+        }
+    }
 
     if (true) {
 	   // eye space shading
@@ -206,7 +238,7 @@ void main()
 
 	// finally, output the fragment color
     gl_FragColor = outputColor;
-
+    //gl_FragColor = vec4(vec3(shadeFactor), 1);
 }			
 
 	

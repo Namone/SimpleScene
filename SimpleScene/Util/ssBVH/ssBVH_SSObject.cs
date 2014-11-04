@@ -85,8 +85,8 @@ namespace SimpleScene.Util.ssBVH
         }
 
         private static readonly SSVertex_Pos[] vertices = {
-            new SSVertex_Pos (0f, 0f, 0f), new SSVertex_Pos(1f, 0f, 0f), new SSVertex_Pos(1f, 1f, 0f), new SSVertex_Pos(0f, 1f, 0f),
-            new SSVertex_Pos (0f, 0f, 1f), new SSVertex_Pos(1f, 0f, 1f), new SSVertex_Pos(1f, 1f, 1f), new SSVertex_Pos(0f, 1f, 1f),
+            new SSVertex_Pos (0f, 0f, 0f), new SSVertex_Pos(1f, 0f, 0f), new SSVertex_Pos(1f, 1f, 0f), new SSVertex_Pos(0f, 1f, 0f), // face1
+            new SSVertex_Pos (0f, 0f, 1f), new SSVertex_Pos(1f, 0f, 1f), new SSVertex_Pos(1f, 1f, 1f), new SSVertex_Pos(0f, 1f, 1f), // face2
         };
         private static readonly ushort[] indices = {
             0, 1, 1, 2, 2, 3, 3, 0, // face1
@@ -133,6 +133,7 @@ namespace SimpleScene.Util.ssBVH
         }
 
         public override void Render(ref SSRenderConfig renderConfig) {
+            return;
             if (renderConfig.drawingShadowMap) return;
 			base.Render(ref renderConfig);
 			SSShaderProgram.DeactivateAll();
