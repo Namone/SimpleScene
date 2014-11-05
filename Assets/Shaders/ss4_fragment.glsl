@@ -155,7 +155,7 @@ void main()
     const int numPoissionSamples = 4;
     const float sampleShadeFactor = 0.6 / numPoissionSamples;
     float shadeFactor = 1.0;
-    vec3 seed3 = f_vertexPosition_objectspace.xyz * 1000.0;
+    vec3 seed3 = floor(f_vertexPosition_objectspace.xyz * 1000.0);
 	for (int i = 0; i < numShadowMaps; ++i) {
         vec4 coord = f_shadowMapCoords[i];
         float coordZ = (coord.z - DEPTH_OFFSET) / coord.w;
