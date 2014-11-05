@@ -81,6 +81,11 @@ namespace SimpleScene
             GL.TexParameter(TextureTarget.Texture2D, 
                             TextureParameterName.TextureWrapT, 
                             (int)TextureWrapMode.ClampToEdge);
+            //glTexParameteri( TextureId , GL_TEXTURE_COMPARE_MODE_ARB,
+            //    GL_COMPARE_R_TO_TEXTURE_ARB;
+            GL.TexParameter(TextureTarget.Texture2D,
+                TextureParameterName.TextureCompareMode,
+                (int)TextureCompareMode.CompareRToTexture);
 
 			// GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, (float)1.0f);
 
@@ -98,10 +103,6 @@ namespace SimpleScene
 			// turn off reading and writing to color data
 			GL.DrawBuffer(DrawBufferMode.None); 
 			GL.ReadBuffer(ReadBufferMode.None);
-            //GL.Ext.FramebufferTexture(
-            //	FramebufferTarget.Framebuffer,
-            //    FramebufferAttachment.Depth,0,0);
-
 
 			assertFramebufferOK();
         }
