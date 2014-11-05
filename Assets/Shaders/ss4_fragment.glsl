@@ -35,7 +35,7 @@ varying vec3 surfaceNormalVector;
 uniform int shadowMapEnabled;
 const int MAX_NUM_SHADOWMAPS = 4;
 uniform int numShadowMaps;
-uniform sampler2D shadowMapTextures[MAX_NUM_SHADOWMAPS];
+uniform sampler2DShadow shadowMapTextures[MAX_NUM_SHADOWMAPS];
 varying vec4 f_shadowMapCoords[MAX_NUM_SHADOWMAPS];
 
 
@@ -151,25 +151,20 @@ void main()
 	vec4 glowColor    = (ambiTexEnabled == 1) ? texture2D (ambiTex, gl_TexCoord[0].st) : vec4(0);
 	vec4 specTex      = (specTexEnabled == 1) ? texture2D (specTex, gl_TexCoord[0].st) : vec4(0);
 
+	const float DEPTH_OFFSET = 0.01;
+    const int numPoissionSamples = 4;
+    const float sampleShadeFactor = 0.6 / numPoissionSamples;
     float shadeFactor = 1.0;
     vec3 seed3 = f_vertexPosition_objectspace.xyz * 1000.0;
-	const float DEPTH_OFFSET = 0.01;
-    int numPoissionSamples = 16;
-    float sampleShadeFactor = 0.6 / numPoissionSamples;
-    
 	for (int i = 0; i < numShadowMaps; ++i) {
-        vec2 shadowMapUV = f_shadowMapCoords[i].xy;
-	    float distanceToTexel = f_shadowMapCoords[i].z;
-        
+        vec4 coord = f_shadowMapCoords[i];
+        float coordZ = (coord.z - DEPTH_OFFSET) / coord.w;
         for (int p = 0; p < numPoissionSamples; ++p) {
             int index = int(16.0*rand(vec4(seed3, p)))%16;
-            vec2 offset = poissonDisk[p]/700.0;
-            vec4 shadowMapTexel = texture2D(shadowMapTextures[i], shadowMapUV + offset);
-            float nearestOccluder = shadowMapTexel.x;
-		
-            if (nearestOccluder < (distanceToTexel - DEPTH_OFFSET)) {
-                shadeFactor -= sampleShadeFactor;           
-            }
+            vec2 offset = poissonDisk[index] / 700.0;
+            vec4 shadowMapTexel = shadow2D(shadowMapTextures[i],
+                                           vec3(coord.xy + offset, coordZ));
+            shadeFactor -= (1.0 - shadowMapTexel.r) * sampleShadeFactor;
         }
     }
 
