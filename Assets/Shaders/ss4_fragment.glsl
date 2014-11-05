@@ -161,9 +161,9 @@ void main()
         float coordZ = (coord.z - DEPTH_OFFSET) / coord.w;
         for (int p = 0; p < numPoissionSamples; ++p) {
             int index = int(16.0*rand(vec4(seed3, p)))%16;
-            vec2 offset = poissonDisk[index] / 700.0;
+            vec2 offsetXY = poissonDisk[index] / 700.0;
             vec4 shadowMapTexel = shadow2D(shadowMapTextures[i],
-                                           vec3(coord.xy + offset, coordZ));
+                                           vec3(coord.xy + offsetXY, coordZ));
             shadeFactor -= (1.0 - shadowMapTexel.r) * sampleShadeFactor;
         }
     }
