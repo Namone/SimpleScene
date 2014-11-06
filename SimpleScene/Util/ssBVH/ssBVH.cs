@@ -85,6 +85,11 @@ namespace SimpleScene.Util.ssBVH
             return traverse( box => box.intersectsAABB(volume) );            
         }
 
+        /// <summary>
+        /// Call this to batch-optimize any object-changes notified through 
+        /// ssBVHNode.refit_ObjectChanged(..). For example, in a game-loop, 
+        /// call this once per frame.
+        /// </summary>
         public void optimize() {  
             if (LEAF_OBJ_MAX != 1) {
                 throw new Exception("In order to use optimize, you must set LEAF_OBJ_MAX=1");
