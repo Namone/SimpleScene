@@ -20,10 +20,9 @@ using System.Text;
 
 using OpenTK;
 
-// TODO: add BVH ray-traversal
-// TODO: add BVH sphere-intersection 
-// TODO: add method to "add an object to the existing BVH"
-// TODO: add method to "move an object in the existing BVH"
+// TODO: handle merge/split when LEAF_OBJ_MAX > 1 and objects move
+// TODO: add sphere traversal
+
 
 namespace SimpleScene.Util.ssBVH
 {
