@@ -18,14 +18,24 @@ namespace SimpleScene
 
 	public class SSLight : SSObjectBase
 	{
-		private const LightName c_firstNameIdx = LightName.Light0;
+        // Light type is somewhat of a placeholder for now.
+        // Currently need a way to find objects "between" AABB and the light
+        public enum LightType { Directional, PointSource };        
+
+        private const LightName c_firstNameIdx = LightName.Light0;
 		private const LightName c_lastNameIdx = LightName.Light7;
 		static private readonly Queue<LightName> s_avaiableLightNames = new Queue<LightName>();
 
 		public Vector4 Ambient = new Vector4(0.4f);
 		public Vector4 Specular = new Vector4 (1.0f);
 		public Vector4 Diffuse = new Vector4 (0.8f);
+        public LightType Type = LightType.Directional;
         public SSShadowMap ShadowMap = null;
+
+        public Vector3 Direction {
+            get { return Pos; }
+            set { Pos = value; }
+        }
 
 		protected LightName m_lightName;
 
@@ -46,15 +56,18 @@ namespace SimpleScene
 			this.calcMatFromState ();
 		}
 
-		~SSLight() {
-			DisableLight ();
-			s_avaiableLightNames.Enqueue (m_lightName);
+		~SSLight() { 
+            // this isn't valid, because the GL context can be gone before this destructor is called
+            // If we're going to do this, we need to do something to find out that the owning GL context is still alive.
+                    
+			// DisableLight ();
+			// s_avaiableLightNames.Enqueue (m_lightName);
 		}
 
         public void AddShadowMap(TextureUnit unit) {
             // TODO pass the texture unit to shadowmap constructor
             // TODO add multiple shadowmaps to the same light?
-            ShadowMap = new SSShadowMap (unit);
+            ShadowMap = new SSShadowMap (this, unit);
         }
 
 		public void SetupLight_alt(ref SSRenderConfig renderConfig) {
@@ -87,7 +100,8 @@ namespace SimpleScene
 			// w=1.0 is a point light
 			// w=0.0 is a directional light
 			// we put it at the origin because it is transformed by the model view matrix (which already has our position)
-			GL.Light (m_lightName, LightParameter.Position, new Vector4(0,0,0,1.0f)); 
+            float w = (Type == LightType.Directional ? 0.0f : 1.0f);
+            GL.Light (m_lightName, LightParameter.Position, new Vector4(Pos, w)); 
 
 			int idx = m_lightName - c_firstNameIdx;
 			GL.Enable (EnableCap.Light0 + idx);

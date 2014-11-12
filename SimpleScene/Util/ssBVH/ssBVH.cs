@@ -20,10 +20,8 @@ using System.Text;
 
 using OpenTK;
 
-// TODO: add BVH ray-traversal
-// TODO: add BVH sphere-intersection 
-// TODO: add method to "add an object to the existing BVH"
-// TODO: add method to "move an object in the existing BVH"
+// TODO: handle merge/split when LEAF_OBJ_MAX > 1 and objects move
+// TODO: add sphere traversal
 
 namespace SimpleScene.Util.ssBVH
 {
@@ -51,24 +49,46 @@ namespace SimpleScene.Util.ssBVH
 
         public HashSet<ssBVHNode<GO>> refitNodes = new HashSet<ssBVHNode<GO>>();
 
-        private void traverseRay(ssBVHNode<GO> curNode, SSRay ray, List<ssBVHNode<GO>> hitlist) {
+        public delegate bool NodeTest(SSAABB box);
+
+        // internal functional traversal...
+        private void _traverse(ssBVHNode<GO> curNode, NodeTest hitTest, List<ssBVHNode<GO>> hitlist) {
             if (curNode == null) { return; }
-            SSAABB box = curNode.box;            
-            float tnear = 0f, tfar = 0f;
-            
-            if (OpenTKHelper.intersectRayAABox1(ray,box,ref tnear, ref tfar)) {
+            if (hitTest(curNode.box)) {
                 hitlist.Add(curNode);
-                traverseRay(curNode.left,ray,hitlist);
-                traverseRay(curNode.right,ray,hitlist);
+                _traverse(curNode.left,hitTest,hitlist);
+                _traverse(curNode.right,hitTest,hitlist);
             }
         }
 
-        public List<ssBVHNode<GO>> traverseRay(SSRay ray) {
+        // public interface to traversal..
+        public List<ssBVHNode<GO>> traverse(NodeTest hitTest) {
             var hits = new List<ssBVHNode<GO>>();
-
-            traverseRay(rootBVH,ray,hits);
+            this._traverse(rootBVH,hitTest,hits);
             return hits;
         }
+        
+        // left in for compatibility..
+        public List<ssBVHNode<GO>> traverseRay(SSRay ray) {
+            float tnear = 0f, tfar = 0f;
+
+            return traverse( box => OpenTKHelper.intersectRayAABox1(ray,box,ref tnear, ref tfar) );
+        }
+
+        public List<ssBVHNode<GO>> traverse(SSRay ray) {
+            float tnear = 0f, tfar = 0f;
+
+            return traverse( box => OpenTKHelper.intersectRayAABox1(ray,box,ref tnear, ref tfar) );
+        }
+        public List<ssBVHNode<GO>> traverse(SSAABB volume) {
+            return traverse( box => box.intersectsAABB(volume) );            
+        }
+
+        /// <summary>
+        /// Call this to batch-optimize any object-changes notified through 
+        /// ssBVHNode.refit_ObjectChanged(..). For example, in a game-loop, 
+        /// call this once per frame.
+        /// </summary>
 
         public void optimize() {  
             if (LEAF_OBJ_MAX != 1) {

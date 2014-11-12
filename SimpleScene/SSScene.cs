@@ -175,10 +175,13 @@ namespace SimpleScene
             GL.ShadeModel(ShadingModel.Flat);
             GL.Disable(EnableCap.ColorMaterial);
 
+            var frustumMatrix = m_renderConfig.invCameraViewMat * m_renderConfig.projectionMatrix;
+            var frustum = new Util3d.FrustumCuller (ref frustumMatrix);
+
 			// Shadow Map Pass(es)
             foreach (var light in m_lights) {
                 if (light.ShadowMap != null) {
-                    light.ShadowMap.PrepareForRender(m_renderConfig);
+                    light.ShadowMap.PrepareForRender(m_renderConfig, m_objects, frustum);
                     renderPass(false);
                     light.ShadowMap.FinishRender(m_renderConfig);
                 }
@@ -228,7 +231,7 @@ namespace SimpleScene
                 if (m_renderConfig.frustumCulling &&
                     fc != null &&
                     obj.boundingSphere != null &&
-                    !fc.isSphereInsideFrustum(obj.Pos, obj.boundingSphere.radius * obj.Scale.LengthFast)) {
+                    !fc.isSphereInsideFrustum(obj.Pos, obj.ScaledRadius)) {
                     m_renderConfig.renderStats.objectsCulled++;
                     continue; // skip the object
                 }
