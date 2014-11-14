@@ -151,9 +151,14 @@ void main()
 	vec4 glowColor    = (ambiTexEnabled == 1) ? texture2D (ambiTex, gl_TexCoord[0].st) : vec4(0);
 	vec4 specTex      = (specTexEnabled == 1) ? texture2D (specTex, gl_TexCoord[0].st) : vec4(0);
 
-	const float DEPTH_OFFSET = 0.01;
+    // shadowmap test
+    float cosTheta = clamp(dot(surfaceLightVector, f_vertexNormal), 0, 1);
+    float bias = 0.005 * tan(acos(cosTheta));
+    float DEPTH_OFFSET = clamp(bias, 0, 0.01);
+
     const int numPoissionSamples = 4;
     const float sampleShadeFactor = 0.6 / numPoissionSamples;
+   
     float shadeFactor = 1.0;
     vec3 seed3 = floor(f_vertexPosition_objectspace.xyz * 1000.0);
 	for (int i = 0; i < numShadowMaps; ++i) {
