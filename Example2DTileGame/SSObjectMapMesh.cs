@@ -147,10 +147,10 @@ namespace Example2DTileGame
                             // Get total heights [X]
                             // Get average of heights around the squares...[X]
                             // Set points equal to average of points[X]
-                            h1 = mapHeights[i - 1, j - 1];
+                            h1 = mapHeights[i + 0, j - 1];
                             h2 = mapHeights[i - 1, j + 0];
                             h3 = mapHeights[i + 1, j + 0];
-                            h4 = mapHeights[i + 1, j + 1];
+                            h4 = mapHeights[i + 0, j + 1];
 
                             totalHeight = h1 + h2 + h3 + h4; // Total peak height
                             avgHeight = totalHeight / 4; // Average peak height around

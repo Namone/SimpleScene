@@ -79,7 +79,7 @@ namespace Example2DTileGame
         public void setupMap()
         {
 
-            SSObjectMapMesh line = new SSObjectMapMesh();
+            SSMap line = new SSMap();
 
             line.Pos = new Vector3(0, 0, 0); // places the origin of the map mesh into the world at (0,0,0)
             line.renderState.lighted = true;
