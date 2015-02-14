@@ -43,112 +43,16 @@ namespace Example2DTileGame
         }
         #endregion
 
-        /// <summary>
-        /// Draw wire frame
-        /// </summary>
-        public void drawWireFrame()
-        {
+		// constructor
+        public SSMap() {
+			this.ambientMatColor = new Color4(1.0f,1.0f,1.0f,0.0f);
+			this.emissionMatColor = new Color4(1.0f,1.0f,1.0f,0.0f);
+			this.diffuseMatColor = new Color4(0.0f,0.0f,0.0f,0.0f);
 
-            // Draw the 'outline' of the map
-            GL.Begin(PrimitiveType.Lines);
-            {
+			constructMap();
+		}
 
-                // Drawing code
-                foreach (VertexData v in groundMesh_Lines)
-                {
-                    GL.Color4(v.Color);
-                    GL.Vertex3(v.Pos); // Draw
-                }
-
-            }
-            GL.End();
-
-            // Draw the triangle 'ground'
-            GL.Begin(PrimitiveType.Triangles);
-            {
-                foreach (VertexData v in groundMesh_Tri)
-                {
-                    GL.Color4(v.Color);
-                    GL.Vertex3(v.Pos);
-                }
-            }
-            GL.End();
-
-        }
-
-        /// <summary>
-        /// Add the points to the array list
-        /// </summary>
-        /// <param name="p0">Bottom-left corner</param>
-        /// <param name="p1">Top-left corner</param>
-        /// <param name="p2">Bottom-right corner</param>
-        /// <param name="p3">Top-right corner</param>
-        /// <param name="middle">Middle of square drawn</param>
-        public void addToWireArray(Vector3 p0, Vector3 p1, 
-            Vector3 p2, Vector3 p3, Vector3 middle)
-        {
-            // Base
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));  
-
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y)));
-
-            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y)));
-
-            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));
-
-            // Middle
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-
-
-            //----------------------------------------------------
-
-            
-            //Triangles
-            
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); // 3
-
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p0.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p2.Y))); // 3
-
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y))); // 3
-
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p2.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p3.Y))); // 3
-        }
-
-
-        /// <summary>
-        /// Render
-        /// </summary>
-        /// <param name="renderConfig"></param>
-        public override void Render(ref SSRenderConfig renderConfig)
-        {
-            base.Render(ref renderConfig);
-
-            // Set-up render
-            SSShaderProgram.DeactivateAll(); // Disable GLSL
-            GL.Disable(EnableCap.Texture2D);
-            GL.Disable(EnableCap.Lighting);
-            // End of set-up
-
-            drawWireFrame(); // Draw it
-
-        }
-        
-        /// <summary>
-        /// Construct the map
-        /// </summary>
-        public SSMap()
-        {
+		private void constructMap() {
             Random rand = new Random();
             float avgHeight;
             float totalHeight;
@@ -217,6 +121,115 @@ namespace Example2DTileGame
                 }
             }
         }
+
+
+
+        /// <summary>
+        /// Draw wire frame
+        /// </summary>
+        public void drawWireFrame()
+        {
+
+            // Draw the 'outline' of the map
+            GL.Begin(PrimitiveType.Lines);
+            {
+
+                // Drawing code
+                foreach (VertexData v in groundMesh_Lines)
+                {
+                    GL.Color4(v.Color);
+                    GL.Vertex3(v.Pos); // Draw
+                }
+
+            }
+            GL.End();
+
+            // Draw the triangle 'ground'
+            GL.Begin(PrimitiveType.Triangles);
+            {
+                foreach (VertexData v in groundMesh_Tri)
+                {
+                    GL.Color4(v.Color);
+                    GL.Vertex3(v.Pos);
+                }
+            }
+            GL.End();
+
+        }
+
+        /// <summary>
+        /// Add the points to the array list
+        /// </summary>
+        /// <param name="p0">Bottom-left corner</param>
+        /// <param name="p1">Top-left corner</param>
+        /// <param name="p2">Bottom-right corner</param>
+        /// <param name="p3">Top-right corner</param>
+        /// <param name="middle">Middle of square drawn</param>
+        public void addToWireArray(Vector3 p0, Vector3 p1, 
+            Vector3 p2, Vector3 p3, Vector3 middle)
+        {
+            // Base
+            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));  
+
+            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y)));
+
+            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y)));
+
+            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));
+
+            // Middle
+            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+
+
+            //----------------------------------------------------
+
+            
+            //Triangles
+            
+			// bottom-left : middle : top-left
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y))); 
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); 
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); 
+
+			// top-left : middle : top-right
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y))); // 3
+
+			// top-right : middle : bottom-right
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y))); // 3
+
+            // bottom-right: middle : bottom-left
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y))); // 3
+
+        }
+
+
+        /// <summary>
+        /// Render
+        /// </summary>
+        /// <param name="renderConfig"></param>
+        public override void Render(ref SSRenderConfig renderConfig)
+        {
+            base.Render(ref renderConfig);
+
+            // Set-up render
+            SSShaderProgram.DeactivateAll(); // Disable GLSL
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Lighting);
+            // End of set-up
+
+            drawWireFrame(); // Draw it
+
+        }
+        
 
         /// <summary>
         /// Average out the values of the heights by 

@@ -79,14 +79,15 @@ namespace Example2DTileGame
         public void setupMap()
         {
 
-            SSMap line = new SSMap();
+            SSMap mapMesh = new SSMap();
 
-            line.Pos = new Vector3(0, 0, 0); // places the origin of the map mesh into the world at (0,0,0)
-            line.renderState.lighted = true;
-            line.ambientMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-            line.diffuseMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-            line.specularMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-            scene.AddObject(line);
+            mapMesh.Pos = new Vector3(0, 0, 0); // places the origin of the map mesh into the world at (0,0,0)
+            mapMesh.renderState.lighted = false;
+            mapMesh.ambientMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
+            mapMesh.emissionMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
+            mapMesh.diffuseMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+            mapMesh.specularMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+            scene.AddObject(mapMesh);
         }
 
         public void setupPlayer()
