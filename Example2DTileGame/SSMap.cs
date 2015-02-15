@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,15 @@ namespace Example2DTileGame
 {
     class SSMap : SSObject
     {
-        #region Variables
+        // Variables
+        //-------------------------------------------------------------------------------------------
         static int arrayW = 50;
         static int arrayH = 50;
         float[,] mapHeight = new float[arrayW, arrayH];
         public float MAX_HEIGHT = 50.0f;
         float squareWidth = 4;
+
+        Hashtable normals = new Hashtable();
 
         Vector3 p0;
         Vector3 p1;
@@ -33,15 +37,16 @@ namespace Example2DTileGame
         {
             public Vector3 Pos;
             public Color4 Color;
-            //public Vector2 TUV;
+            public Vector3 glNormal;
 
-            public VertexData(Vector3 pos, Color4 color)
+            public VertexData(Vector3 pos, Color4 color, Vector3 normal)
             {
                 this.Pos = pos;
                 this.Color = color;
+                this.glNormal = normal;
             }
         }
-        #endregion
+        //-------------------------------------------------------------------------------------------
 
 		// constructor
         public SSMap() {
@@ -122,12 +127,10 @@ namespace Example2DTileGame
             }
         }
 
-
-
         /// <summary>
-        /// Draw wire frame
+        /// Draw map
         /// </summary>
-        public void drawWireFrame()
+        public void drawMap()
         {
 
             // Draw the 'outline' of the map
@@ -162,8 +165,7 @@ namespace Example2DTileGame
                 {
 					GL.Color4(Color4.Red);
 					GL.Vertex3(v.Pos);
-					GL.Vertex3(v.Pos + Vector3.UnitY.Normalized() * 2f);
-
+					GL.Vertex3(v.glNormal.Normalized()); // Draw normalized vector
                 }
             }
             GL.End();
@@ -182,20 +184,21 @@ namespace Example2DTileGame
         public void addToWireArray(Vector3 p0, Vector3 p1, 
             Vector3 p2, Vector3 p3, Vector3 middle)
         {
+            // TEMPORARLIY COMMENTED OUT
             // Base
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));  
+            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));  
 
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y)));
+            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y)));
 
-            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y)));
+            //groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y)));
 
-            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));
+            //groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));
 
-            // Middle
-            groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            //// Middle
+            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            //groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            //groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            //groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
 
 
             //----------------------------------------------------
@@ -204,25 +207,39 @@ namespace Example2DTileGame
             //Triangles
             
 			// bottom-left : middle : top-left
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y))); 
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); 
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); 
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), calcNormals(p0, p1, middle)));
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), calcNormals(p0, p1, middle)));
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), calcNormals(p0, p1, middle))); 
+
 
 			// top-left : middle : top-right
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y))); // 3
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), calcNormals(p1, p3, middle))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), calcNormals(p1, p3, middle))); // 2
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), calcNormals(p1, p3, middle))); // 3
 
 			// top-right : middle : bottom-right
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y))); // 3
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), calcNormals(p3, p2, middle))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), calcNormals(p3, p2, middle))); // 2
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), calcNormals(p3, p2, middle))); // 3
 
             // bottom-right: middle : bottom-left
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y))); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y))); // 2
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y))); // 3
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), calcNormals(p2, p0, middle))); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), calcNormals(p2, p0, middle))); // 2
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), calcNormals(p2, p0, middle))); // 3
 
+        }
+
+        /// <summary>
+        /// Calculate the normals for every vertex
+        /// </summary>
+        /// <param name="p0">Point 1</param>
+        /// <param name="p1">Point 2</param>
+        /// <param name="p2">Middle</param>
+        /// <returns></returns>
+        public Vector3 calcNormals(Vector3 p0, Vector3 p1, Vector3 p2)
+        {
+            Vector3 normal = Vector3.Cross(p0 - p1, p0 - p2);
+            return normal;
         }
 
 
@@ -240,7 +257,7 @@ namespace Example2DTileGame
             GL.Disable(EnableCap.Lighting);
             // End of set-up
 
-            drawWireFrame(); // Draw it
+            drawMap(); // Draw it
 
         }
         
@@ -262,7 +279,7 @@ namespace Example2DTileGame
 
         Color4 colorForHeight(float height)
         {
-            return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 2, height / MAX_HEIGHT * 5, 0);
+            return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 5, height / MAX_HEIGHT * 5, 0);
         }
 
 
