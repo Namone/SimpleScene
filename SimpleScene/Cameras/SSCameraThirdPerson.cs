@@ -24,6 +24,15 @@ namespace SimpleScene
 		public SSCameraThirdPerson (Vector3 origin) : base() {
 			this.basePos = origin;
 		}
+
+
+		public override void MousePan(Vector3 panPlaneNormal, float XDelta, float YDelta) {
+			Vector3 xDir = Vector3.Cross(this.Dir,panPlaneNormal).Normalized();
+			Vector3 yDir = Vector3.Cross(xDir,panPlaneNormal).Normalized();
+
+			this.basePos += yDir * -YDelta + xDir * -XDelta;
+		}
+
 		public override void Update(float fElapsedMS) {
 			Vector3 targetPos = basePos;
 			// FPS follow the target

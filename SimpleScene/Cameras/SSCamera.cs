@@ -19,6 +19,14 @@ namespace SimpleScene
 			return (float)Math.PI * angleInDegrees / 180.0f;
 		}
 
+		public virtual void MousePan(Vector3 panPlaneNormal, float XDelta, float YDelta) {
+			Vector3 xDir = Vector3.Cross(this.Dir,panPlaneNormal).Normalized();
+			Vector3 yDir = Vector3.Cross(xDir,panPlaneNormal).Normalized();
+
+			this.Pos += yDir * YDelta + xDir * XDelta;
+			
+		}
+
 		public void MouseDeltaOrient(float XDelta, float YDelta) {
 			Quaternion yaw_Rotation = Quaternion.FromAxisAngle(Vector3.UnitY,DegreeToRadian(-XDelta));
     		Quaternion pitch_Rotation = Quaternion.FromAxisAngle(this.Right,DegreeToRadian(-YDelta));

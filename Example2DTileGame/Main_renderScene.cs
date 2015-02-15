@@ -101,7 +101,7 @@ namespace Example2DTileGame
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-			this.mouseButtonDown = false; // hack to fix resize mouse issue..
+			this.mouseLeftButtonDown = false; // hack to fix resize mouse issue..
 
 			// setup the viewport projection
 

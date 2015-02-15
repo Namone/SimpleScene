@@ -18,10 +18,23 @@ namespace Example2DTileGame
 
 		SSObject selectedObject = null;
 
+		private void adjustMouseCursor() {
+			// this doesn't seem to work on MacOS...
+			if (this.mouseRightButtonDown) {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+			} else if (this.mouseLeftButtonDown) { 
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.VSplit;
+			} else {
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+			}
+		}
+
 		public void setupInput() {
 			// hook mouse drag input...
 			this.MouseDown += (object sender, MouseButtonEventArgs e) => {
-				this.mouseButtonDown = true;
+				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
+				this.mouseRightButtonDown = e.Mouse.IsButtonDown(MouseButton.Right);
+				this.adjustMouseCursor();
 
 				// cast ray for mouse click
 				var clientRect = new System.Drawing.Size(ClientRectangle.Width, ClientRectangle.Height);
@@ -37,10 +50,15 @@ namespace Example2DTileGame
 
 			};
 			this.MouseUp += (object sender, MouseButtonEventArgs e) => { 
-				this.mouseButtonDown = false;
+				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
+				this.mouseRightButtonDown = e.Mouse.IsButtonDown(MouseButton.Right);
+				this.adjustMouseCursor();
 			};
 			this.MouseMove += (object sender, MouseMoveEventArgs e) => {
-				if (this.mouseButtonDown) {
+				if (this.mouseRightButtonDown) { 
+					// move the mouse in projected X,Z, to keep the map a constant distance away
+					this.scene.ActiveCamera.MousePan(Vector3.UnitY, e.XDelta,e.YDelta);
+				} else if (this.mouseLeftButtonDown) {
 
 					// Console.WriteLine("mouse dragged: {0},{1}",e.XDelta,e.YDelta);
 					this.scene.ActiveCamera.MouseDeltaOrient(e.XDelta,e.YDelta);

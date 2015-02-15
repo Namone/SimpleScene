@@ -28,7 +28,8 @@ namespace Example2DTileGame
 		SSScene scene = new SSScene();
         SSScene hudScene = new SSScene(); 
 
-		bool mouseButtonDown = false;	
+		bool mouseLeftButtonDown = false;
+		bool mouseRightButtonDown = false;	
 		
 	    SSMainShaderProgram shaderPgm;
 
@@ -54,7 +55,7 @@ namespace Example2DTileGame
 		protected override void OnFocusedChanged (EventArgs e)
 		{
 			base.OnFocusedChanged (e);
-			mouseButtonDown = false;
+			mouseLeftButtonDown = false;
 		}
 
 		/// <summary>Load resources here.</summary>

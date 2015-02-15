@@ -63,7 +63,7 @@ namespace Example2DTileGame
             {
                 for(int j = 0; j < mapHeight.GetLength(1) - 1; j++)
                 {
-                    mapHeight[i, j] = (float)rand.NextDouble() * MAX_HEIGHT; // Store random heights that are less than max height
+                    mapHeight[i, j] = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT/2.0f; // Store random heights that are less than max height
                 }
             }
 
@@ -150,10 +150,24 @@ namespace Example2DTileGame
                 foreach (VertexData v in groundMesh_Tri)
                 {
                     GL.Color4(v.Color);
-                    GL.Vertex3(v.Pos);
+					GL.Vertex3(v.Pos);
                 }
             }
             GL.End();
+
+            // Draw the triangle 'ground'
+            GL.Begin(PrimitiveType.Lines);
+            {
+                foreach (VertexData v in groundMesh_Tri)
+                {
+					GL.Color4(Color4.Red);
+					GL.Vertex3(v.Pos);
+					GL.Vertex3(v.Pos + Vector3.UnitY.Normalized() * 2f);
+
+                }
+            }
+            GL.End();
+
 
         }
 
@@ -248,7 +262,7 @@ namespace Example2DTileGame
 
         Color4 colorForHeight(float height)
         {
-            return new Color4(height / MAX_HEIGHT, height / MAX_HEIGHT * 2, height / MAX_HEIGHT * 5, 0);
+            return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 2, height / MAX_HEIGHT * 5, 0);
         }
 
 

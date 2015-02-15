@@ -43,6 +43,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Movement.cs" />
@@ -71,11 +72,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GDIviaAGGTest\GDIviaAGGTest.csproj">
-      <Project>{1cf3fb58-7d5b-4329-b96e-77b99a60ab36}</Project>
+      <Project>{1CF3FB58-7D5B-4329-B96E-77B99A60AB36}</Project>
       <Name>GDIviaAGGTest</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleScene\_SimpleScene.csproj">
-      <Project>{4a7a056c-cb90-4f29-95de-eac471a6cbd7}</Project>
+      <Project>{4A7A056C-CB90-4F29-95DE-EAC471A6CBD7}</Project>
       <Name>_SimpleScene</Name>
     </ProjectReference>
   </ItemGroup>
