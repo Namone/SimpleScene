@@ -37,13 +37,13 @@ namespace Example2DTileGame
         {
             public Vector3 Pos;
             public Color4 Color;
-            public Vector3 glNormal;
+            public Vector3 triangleFaceNormal;
 
             public VertexData(Vector3 pos, Color4 color, Vector3 normal)
             {
                 this.Pos = pos;
                 this.Color = color;
-                this.glNormal = normal;
+                this.triangleFaceNormal = normal;
             }
         }
         //-------------------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ namespace Example2DTileGame
                 {
 					GL.Color4(Color4.Red);
 					GL.Vertex3(v.Pos);
-					GL.Vertex3(v.glNormal.Normalized()); // Draw normalized vector
+					GL.Vertex3(v.Pos + v.triangleFaceNormal.Normalized()); // Draw normalized vector
                 }
             }
             GL.End();
@@ -238,7 +238,7 @@ namespace Example2DTileGame
         /// <returns></returns>
         public Vector3 calcNormals(Vector3 p0, Vector3 p1, Vector3 p2)
         {
-            Vector3 normal = Vector3.Cross(p0 - p1, p0 - p2);
+            Vector3 normal = Vector3.Cross(p0 - p2, p0 - p1);
             return normal;
         }
 
