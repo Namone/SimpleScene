@@ -22,7 +22,7 @@ namespace Example2DTileGame
         public float MAX_HEIGHT = 50.0f;
         float squareWidth = 4;
 
-        Hashtable normals = new Hashtable();
+        Dictionary<Vector3, List<Vector3>> positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
 
         Vector3 p0;
         Vector3 p1;
