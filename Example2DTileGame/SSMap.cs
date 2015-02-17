@@ -122,16 +122,7 @@ namespace Example2DTileGame
 
                     middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
 
-                    // Calculate the normals
-                    Vector3 n1 = calcNormals(p0, p1, middle);
-                    Vector3 n2 = calcNormals(p1, p3, middle);
-                    Vector3 n3 = calcNormals(p3, p2, middle);
-                    Vector3 n4 = calcNormals(p2, p0, middle);
-
-                    Vector3 totalNormal = n1 + n2 + n3 + n4;
-                    Vector3 avgNormal = totalNormal / 4;
-
-                    addToMapArray(p0, p1, p2, p3, middle, avgNormal);
+                    addToMapArray(p0, p1, p2, p3, middle);
                    
                 }
             }
@@ -192,7 +183,7 @@ namespace Example2DTileGame
         /// <param name="p3">Top-right corner</param>
         /// <param name="middle">Middle of square drawn</param>
         public void addToMapArray(Vector3 p0, Vector3 p1, 
-            Vector3 p2, Vector3 p3, Vector3 middle, Vector3 normalAvg)
+            Vector3 p2, Vector3 p3, Vector3 middle)
         {
             // TEMPORARLIY COMMENTED OUT
             // Base
@@ -213,28 +204,37 @@ namespace Example2DTileGame
 
             //----------------------------------------------------
 
-                //Triangles
+            //Triangles
 
-                // bottom-left : middle : top-left
-                groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), normalAvg));
-                groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), normalAvg));
-                groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), normalAvg)); 
+            Vector3 tri1 = calcNormals(p0, p1, middle);
+            Vector3 tri2 = calcNormals(p1, p3, middle);
+            Vector3 tri3 = calcNormals(p3, p2, middle);
+            Vector3 tri4 = calcNormals(p2, p0, middle);
+
+            Vector3 totalNorm = tri1 + tri2 + tri3 + tri4;
+
+            Vector3 avgNorm = totalNorm / 4;
+             
+            // bottom-left : middle : top-left
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), avgNorm));
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm));
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), avgNorm)); 
 
 
 			// top-left : middle : top-right
-                groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), normalAvg)); // 1
-                groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), normalAvg)); // 2
-                groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), normalAvg)); // 3
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), avgNorm)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), avgNorm)); // 3
 
 			// top-right : middle : bottom-right
-                groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), normalAvg)); // 1
-                groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), normalAvg)); // 2
-                groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), normalAvg)); // 3
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), avgNorm)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), avgNorm)); // 3
 
             // bottom-right: middle : bottom-left
-                groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), normalAvg)); // 1
-                groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), normalAvg)); // 2
-                groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), normalAvg)); // 3
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), avgNorm)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), avgNorm)); // 3
 
         }
 
