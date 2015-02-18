@@ -19,7 +19,7 @@ namespace Example2DTileGame
         static int arrayW = 50;
         static int arrayH = 50;
         float[,] mapHeight = new float[arrayW, arrayH];
-        public float MAX_HEIGHT = 50.0f;
+        public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
 
         // 1st value = Key
@@ -34,18 +34,29 @@ namespace Example2DTileGame
 
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
+        List<Vector3> avgNormalList = new List<Vector3>(); // List of avgeraged normals
 
         struct VertexData
         {
             public Vector3 Pos;
             public Color4 Color;
             public Vector3 triangleFaceNormal;
+            public Vector3 averageNormal;
 
             public VertexData(Vector3 pos, Color4 color, Vector3 normal)
             {
                 this.Pos = pos;
                 this.Color = color;
                 this.triangleFaceNormal = normal;
+                this.averageNormal = new Vector3(0, 0, 0);
+            }
+
+            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector3 avgNormal)
+            {
+                this.Pos = pos;
+                this.Color = color;
+                this.triangleFaceNormal = normal;
+                this.averageNormal = avgNormal;
             }
         }
         //-------------------------------------------------------------------------------------------
@@ -56,7 +67,7 @@ namespace Example2DTileGame
 			this.emissionMatColor = new Color4(1.0f,1.0f,1.0f,0.0f);
 			this.diffuseMatColor = new Color4(0.0f,0.0f,0.0f,0.0f);
 
-			constructMap();
+			constructMap(); // Construct the map (set points)
 		}
 
 		private void constructMap() {
@@ -120,8 +131,10 @@ namespace Example2DTileGame
                     p2 = new Vector3(squareCX, average2x2(i, j + 1), squareCY + squareWidth);
                     p3 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j + 1), squareCY + squareWidth);
 
-                    middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
+                    storeNormals(p0, p1, p2, p3);
 
+                    middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
+        
                     addToMapArray(p0, p1, p2, p3, middle);
                    
                 }
@@ -205,50 +218,87 @@ namespace Example2DTileGame
             //----------------------------------------------------
 
             //Triangles
-
-            Vector3 tri1 = calcNormals(p0, p1, middle);
-            Vector3 tri2 = calcNormals(p1, p3, middle);
-            Vector3 tri3 = calcNormals(p3, p2, middle);
-            Vector3 tri4 = calcNormals(p2, p0, middle);
-
-            Vector3 totalNorm = tri1 + tri2 + tri3 + tri4;
-
-            Vector3 avgNorm = totalNorm / 4;
              
             // bottom-left : middle : top-left
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), avgNorm));
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm));
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), avgNorm)); 
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), p0));
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), p0));
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), p0)); 
 
 
 			// top-left : middle : top-right
-            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), avgNorm)); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), avgNorm)); // 3
+            groundMesh_Tri.Add(new VertexData(p1, colorForHeight(p1.Y), p0)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), p0)); // 2
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), p0)); // 3
 
 			// top-right : middle : bottom-right
-            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), avgNorm)); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), avgNorm)); // 3
+            groundMesh_Tri.Add(new VertexData(p3, colorForHeight(p3.Y), p0)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), p0)); // 2
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), p0)); // 3
 
             // bottom-right: middle : bottom-left
-            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), avgNorm)); // 1
-            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), avgNorm)); // 2
-            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), avgNorm)); // 3
+            groundMesh_Tri.Add(new VertexData(p2, colorForHeight(p2.Y), p0)); // 1
+            groundMesh_Tri.Add(new VertexData(middle, colorForHeight(middle.Y), p0)); // 2
+            groundMesh_Tri.Add(new VertexData(p0, colorForHeight(p0.Y), p0)); // 3
 
         }
 
         /// <summary>
-        /// Calculate the normals for every vertex
+        /// Calculate normals/store point values associated with each other
         /// </summary>
         /// <param name="p0">Point 1</param>
         /// <param name="p1">Point 2</param>
         /// <param name="p2">Middle</param>
         /// <returns></returns>
-        public Vector3 calcNormals(Vector3 p0, Vector3 p1, Vector3 p2)
+        public void storeNormals(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
-            Vector3 normal = Vector3.Cross(p0 - p2, p0 - p1);
-            return normal;
+            // Store the map points\\
+
+            // Individual key, and every vertex that matches that key will be placed
+            // in a corrisponding list
+
+            // If the the current vertex is NOT already keyed into dictionary... then add it/them
+
+            //!remember!
+            // every p0, p1, p2, & p3, are different most of the time (except when they meet at a common point...)
+            // MEANING the keys change
+            if (!positionToNormalList.ContainsKey(p0) && !positionToNormalList.ContainsKey(p1)
+                && !positionToNormalList.ContainsKey(p2) && !positionToNormalList.ContainsKey(p3))
+            {
+                positionToNormalList.Add(p0, new List<Vector3> { p0 }); // Create it in dictionary and add to list
+                positionToNormalList.Add(p1, new List<Vector3> { p1 }); // Create it in dictionary and add to list
+                positionToNormalList.Add(p2, new List<Vector3> { p2 }); // Create it in dictionary and add to list
+                positionToNormalList.Add(p3, new List<Vector3> { p3 }); // Create it in dictionary and add to list    
+
+            }
+
+            // If the key already exists...
+            if (positionToNormalList.ContainsKey(p0))
+            {
+                for (int index = 0; index < positionToNormalList[p0].Count; index++)
+                {
+                    positionToNormalList[p0][index].Add(p0); // Add the new point to corrispoding list
+
+                    // TODO - repeat for others and test if working
+                }
+            }
+
+            else if (positionToNormalList.ContainsKey(p1))
+            {
+                
+            }
+
+            else if (positionToNormalList.ContainsKey(p2))
+            {
+                
+            }
+
+            else if (positionToNormalList.ContainsKey(p3))
+            {
+                
+            }
+
+
+
         }
 
 
