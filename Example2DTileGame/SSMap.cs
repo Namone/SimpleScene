@@ -230,7 +230,7 @@ namespace Example2DTileGame
             // step 2...if not, create an empty list and put it in positionToNormalList[position]
             else
             {
-                positionToNormalList.Add(position, new List<Vector3>());
+                positionToNormalList.Add(position, new List<Vector3> { triNormal });
             }
 
         }
