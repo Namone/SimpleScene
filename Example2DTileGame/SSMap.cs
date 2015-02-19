@@ -34,7 +34,6 @@ namespace Example2DTileGame
 
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
-        List<Vector3> avgNormalList = new List<Vector3>(); // List of avgeraged normals
 
         struct VertexData
         {
@@ -251,6 +250,10 @@ namespace Example2DTileGame
         /// <returns></returns>
         public void storeNormals(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
+            Vector3 nomral0;
+            Vector3 nomral1;
+            Vector3 normal2;
+            Vector3 nomral3;
             // Store the map points\\
 
             // Individual key, and every vertex that matches that key will be placed
@@ -271,32 +274,33 @@ namespace Example2DTileGame
 
             }
 
-            // If the key already exists...
             if (positionToNormalList.ContainsKey(p0))
             {
-                for (int index = 0; index < positionToNormalList[p0].Count; index++)
+                positionToNormalList[p0].Add(p0); // Add it into the array list at that key
+                
+                for(int index = 0; index < positionToNormalList[p0].Count; index++)
                 {
-                    positionToNormalList[p0][index].Add(p0); // Add the new point to corrispoding list
-
-                    // TODO - repeat for others and test if working
+                    
                 }
+
             }
 
-            else if (positionToNormalList.ContainsKey(p1))
+            if (positionToNormalList.ContainsKey(p1))
             {
-                
+                positionToNormalList[p1].Add(p1); 
             }
 
-            else if (positionToNormalList.ContainsKey(p2))
+            if (positionToNormalList.ContainsKey(p2))
             {
-                
+                positionToNormalList[p2].Add(p2);
             }
 
-            else if (positionToNormalList.ContainsKey(p3))
+            if (positionToNormalList.ContainsKey(p3))
             {
-                
+                positionToNormalList[p3].Add(p3);
             }
 
+            // Calculate the normals and average them \\
 
 
         }
