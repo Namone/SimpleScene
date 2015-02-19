@@ -27,8 +27,14 @@ namespace SimpleScene
 
 		public SSRay Transformed(Matrix4 mat) {
 		    // a point is directly transformed
-		    // however, a ray is only rotationally transformed.
-			return new SSRay( Vector3.Transform(pos,mat) , Vector3.Transform(dir,mat.ExtractRotation()).Normalized() );
+			var transformed_pos = Vector3.Transform(pos,mat);
+		    // a direction-vector is transformed with only rotation and scale
+			var vector_mat = mat;
+			vector_mat.ClearTranslation(); // so make a new matrix with no translation
+			var transformed_dir = Vector3.TransformVector(dir,vector_mat);
+			
+			// put them together into a new ray
+			return new SSRay(transformed_pos,transformed_dir );
 		}
 
 		public override string ToString() {

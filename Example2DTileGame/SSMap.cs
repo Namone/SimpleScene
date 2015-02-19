@@ -376,8 +376,8 @@ namespace Example2DTileGame
 			if (hitMesh) {
 				// transform local-object-space hit distance, into world space
 		
-				// TODO: this is wrong for non-uniform scales...
-				float worldSpaceContactDistance = -localNearestContact * this.Scale.LengthFast;
+				// TODO: why is this inverted? it seems wrong.
+				float worldSpaceContactDistance = -localNearestContact;
 				distanceAlongRay = worldSpaceContactDistance;
 
 			}
