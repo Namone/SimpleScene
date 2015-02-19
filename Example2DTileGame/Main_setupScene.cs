@@ -90,21 +90,10 @@ namespace Example2DTileGame
             scene.AddObject(mapMesh);
         }
 
-        public void setupPlayer()
-        {/*
-            player = new SSObjectMesh(SSAssetManager.GetInstance<SSMesh_wfOBJ>
-                ("./mapTileModels", "player.obj"));
-
-            player.Pos = new Vector3(PlayerX, PlayerY, PlayerZ); // Default location
-            player.ambientMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-            player.diffuseMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-            player.specularMatColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
-
-            player.renderState.lighted = true;
-
-            scene.AddObject(player);
-            
-       */
+        public void newPlayer(float x, float y)
+        {
+            player = new SSPlayer(x, y);
+            scene.AddObject(player);      
         } 
 
 		public void setupHUD() {

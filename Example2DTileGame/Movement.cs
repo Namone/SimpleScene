@@ -36,37 +36,6 @@ namespace Example2DTileGame
         public void movePlayer()
         {
 
-            // Still a work in progress - but it's getting somewhere
-            player = getPlayer();
-            // TODO - distinguish each condition so they don't all evaluate to true at once
-            if (camera.Dir.X >= 0 && Keyboard[Key.W] && canMove && player.Dir.X == 0
-                && player.Dir.X != 1)
-            {
-                PlayerX--;
-                Console.WriteLine(player.Dir.Z);
-                player.Pos = new Vector3(PlayerX, PlayerY, PlayerZ);
-            }
-
-            else if (camera.Dir.X <= 0 && Keyboard[Key.W] && canMove && player.Dir.X == 0)
-            {
-                PlayerX++;
-             
-                player.Pos = new Vector3(PlayerX, PlayerY, PlayerZ);
-            }
-
-            else if (camera.Dir.Z >= 0 && Keyboard[Key.W] && canMove && player.Dir.Z == 0)
-            {
-                PlayerZ--;
-                Console.WriteLine(player.Dir.Z);
-                player.Pos = new Vector3(PlayerX, PlayerY, PlayerZ);
-            }
-
-            else if (camera.Dir.Z <= 0 && Keyboard[Key.W] && canMove && player.Dir.Z == 1)
-            {
-                PlayerZ++;
-                Console.WriteLine(player.Dir.Z);
-                player.Pos = new Vector3(PlayerX, PlayerY, PlayerZ);
-            }
         }
 
         /// <summary>

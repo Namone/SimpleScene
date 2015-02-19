@@ -16,8 +16,8 @@ namespace Example2DTileGame
     {
         // Variables
         //-------------------------------------------------------------------------------------------
-        static int arrayW = 50;
-        static int arrayH = 50;
+        static int arrayW = 30;
+        static int arrayH = 30;
         float[,] mapHeight = new float[arrayW, arrayH];
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
@@ -232,9 +232,6 @@ namespace Example2DTileGame
             {
                 positionToNormalList.Add(position, new List<Vector3>());
             }
-
-
-            // step 3. add triNormal to the list
 
         }
 

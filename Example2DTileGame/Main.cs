@@ -74,6 +74,11 @@ namespace Example2DTileGame
 		{
 			scene.Update ((float)e.Time);
             camera.Update((float)e.Time);
+
+            if(Keyboard[Key.N])
+            {
+                newPlayer(Mouse.X, Mouse.Y);
+            }
       
             scene.Render();
 			hudScene.Update ((float)e.Time);
@@ -120,7 +125,6 @@ namespace Example2DTileGame
 				game.setupInput  ();
                 game.readMap ();
 				game.setupScene ();
-                game.setupPlayer ();
 				game.setupHUD ();
                 
 				// game.VSync = VSyncMode.Off;
