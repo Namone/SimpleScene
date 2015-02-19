@@ -67,6 +67,22 @@ namespace Example2DTileGame
 			this.diffuseMatColor = new Color4(0.0f,0.0f,0.0f,0.0f);
 
 			constructMap(); // Construct the map (set points)
+
+			setupMesh();
+			
+		}
+
+		private void setupMesh() {
+            // compute and setup bounding sphere for map mesh
+            float radius = 0f;
+            foreach(var vertex in groundMesh_Tri) {
+				radius = Math.Max(radius,vertex.Pos.Length);
+            }
+			this.boundingSphere = new SSObjectSphere(radius);
+			this.OnChanged += (sender) => { 
+					this.boundingSphere.Pos = this.Pos;
+					this.boundingSphere.Scale = this.Scale;
+			};
 		}
 
 		private void constructMap() {
@@ -301,6 +317,11 @@ namespace Example2DTileGame
             }
             GL.End();
 
+
+			// boilerplate to render bounding sphere
+			// if (this.boundingSphere != null) {
+            //    this.boundingSphere.Render(ref renderConfig);
+			// }
         }
         
 
@@ -324,7 +345,44 @@ namespace Example2DTileGame
             return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 5, height / MAX_HEIGHT * 5, 0);
         }
 
+		public override bool PreciseIntersect(ref SSRay worldSpaceRay, ref float distanceAlongRay) {
+			// test to see if ray intersects any of the triangles in our mesh	
+			float localNearestContact = float.MaxValue;
+			bool hitMesh = false;		
 
+			// step 1. convert the ray from world space into object-local space
+			SSRay localRay = worldSpaceRay.Transformed (this.worldMat.Inverted ());
+
+			// step 2. iterate through our triangle mesh, testing each triangle
+			for (int n=0;n<groundMesh_Tri.Count;n+=3) {
+				// grab three points of a triangle
+				var V1 = groundMesh_Tri[n].Pos;
+				var V2 = groundMesh_Tri[n+1].Pos;
+				var V3 = groundMesh_Tri[n+2].Pos;
+
+				// run ray-to-triangle intersection test
+				float contact;
+				if (OpenTKHelper.TriangleRayIntersectionTest (V1, V2, V3, localRay.pos, localRay.dir, out contact)) {
+					// we hit, so return distance
+					if (!hitMesh) { // first hit
+						localNearestContact = contact;
+						hitMesh = true;
+					} else { // next hit
+						localNearestContact = Math.Min (localNearestContact, contact);	
+					}
+				}
+			}
+
+			if (hitMesh) {
+				// transform local-object-space hit distance, into world space
+		
+				// TODO: this is wrong for non-uniform scales...
+				float worldSpaceContactDistance = -localNearestContact * this.Scale.LengthFast;
+				distanceAlongRay = worldSpaceContactDistance;
+
+			}
+			return hitMesh;
+		}
 
     }
 }

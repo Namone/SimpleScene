@@ -15,16 +15,13 @@ namespace Example2DTileGame
 	{
 
 		SSObjectGDISurface_Text fpsDisplay;
-		SSObjectGDISurface_Text wireframeDisplay;
         public static int mapWidth = 1; // for now
         public static int mapHeight = 0;
         public static int mapDepth = 1; // for now
 
-        private static int maxHeight = 256;
-        private static int baseHeight = 0;
-
-        SSObject mapObject;
+        
         SSObject player;
+		SSMap mapObject;
 
         SSRenderConfig renderConfig;
 
@@ -32,10 +29,6 @@ namespace Example2DTileGame
         float CameraX = 0.0f,
               CameraY = 10.0f,
               CameraZ = 0.0f;
-
-        float PlayerX = 0.0f,
-              PlayerY = 1.0f, // So we aren't stuck in the ground
-              PlayerZ = 0.0f;
 
         public static SSObject[,] map = new SSObject[mapWidth, mapDepth];        
         
@@ -79,15 +72,15 @@ namespace Example2DTileGame
         public void setupMap()
         {
 
-            SSMap mapMesh = new SSMap();
+            mapObject = new SSMap();
 
-            mapMesh.Pos = new Vector3(0, 0, 0); // places the origin of the map mesh into the world at (0,0,0)
-            mapMesh.renderState.lighted = false;
-            mapMesh.ambientMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
-            mapMesh.emissionMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
-            mapMesh.diffuseMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
-            mapMesh.specularMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
-            scene.AddObject(mapMesh);
+            mapObject.Pos = new Vector3(0, 0, 0); // places the origin of the map mesh into the world at (0,0,0)
+            mapObject.renderState.lighted = false;
+            mapObject.ambientMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
+            mapObject.emissionMatColor = new Color4(8.0f, 8.0f, 8.0f, 0.0f);
+            mapObject.diffuseMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+            mapObject.specularMatColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+            scene.AddObject(mapObject);
         }
 
         public void newPlayer(float x, float y)

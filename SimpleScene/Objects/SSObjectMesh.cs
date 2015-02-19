@@ -87,6 +87,7 @@ namespace SimpleScene
 					return false; // don't short circuit
 				});
 				if (hit) {
+					// TODO: this is wrong for non-uniform scales
 					float worldSpaceContactDistance = -localNearestContact * this.Scale.LengthFast;
 					Console.WriteLine ("Nearest Triangle Hit @ {0} vs Sphere {1} : Object {2}", worldSpaceContactDistance, distanceAlongRay, Name);
 					distanceAlongRay = worldSpaceContactDistance;

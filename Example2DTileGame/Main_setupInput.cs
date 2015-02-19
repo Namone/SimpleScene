@@ -43,10 +43,26 @@ namespace Example2DTileGame
 				SSRay ray = OpenTKHelper.MouseToWorldRay(
 					this.scene.ProjectionMatrix,this.scene.InvCameraViewMatrix, clientRect, mouseLoc);
 
+				// -- this will add a visual "ray" rendering to the scene...
 				// Console.WriteLine("mouse ({0},{1}) unproject to ray ({2})",e.X,e.Y,ray);
-				// scene.addObject(new SSObjectRay(ray));
+				// scene.AddObject(new SSObjectRay(ray));
 
-				selectedObject = scene.Intersect(ref ray);
+				// -- this will test for collision with scene objects
+				// selectedObject = scene.Intersect(ref ray);
+
+				// -- this collides the ray with the map mesh
+				if (mapObject != null) {
+					float distance = 0.0f;
+					if ( mapObject.PreciseIntersect(ref ray, ref distance) ) {
+						// we hit the map mesh! place an object there
+					
+						Vector3 hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
+						var obj = new SSObjectCube();
+						obj.Pos = hitPoint;
+						scene.AddObject(obj);
+					}
+				}
+
 
 			};
 			this.MouseUp += (object sender, MouseButtonEventArgs e) => { 
