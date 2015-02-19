@@ -34,7 +34,6 @@ namespace Example2DTileGame
 
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
-        List<Vector3> avgNormalList = new List<Vector3>(); // List of avgeraged normals
 
         struct VertexData
         {
