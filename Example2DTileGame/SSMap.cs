@@ -221,8 +221,18 @@ namespace Example2DTileGame
         private void storeNormal(Vector3 position, Vector3 triNormal)
         {
 			// step 1. find out if there is an entry positionToNormalList[position] 
-			
-			// step 2...if not, create an empty list and put it in positionToNormalList[position]
+
+            if (positionToNormalList.ContainsKey(position))
+            {
+                positionToNormalList[position].Add(triNormal); // Add it into the list
+            }
+
+            // step 2...if not, create an empty list and put it in positionToNormalList[position]
+            else
+            {
+                positionToNormalList.Add(position, new List<Vector3>());
+            }
+
 
             // step 3. add triNormal to the list
 
