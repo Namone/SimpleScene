@@ -187,32 +187,33 @@ namespace Example2DTileGame
             // step 2. add Triangles to groundMesh_Tri
              
             // bottom-left : middle : top-left
-			addGroundTriangle(p0,middle,p1);
+			storeTriNormals(p0,middle,p1);
 
 			// top-left : middle : top-right
-			addGroundTriangle(p1,middle,p3);
+			storeTriNormals(p1,middle,p3);
 
 			// top-right : middle : bottom-right
-			addGroundTriangle(p3,middle,p2);
+			storeTriNormals(p3,middle,p2);
 
             // bottom-right: middle : bottom-left
-			addGroundTriangle(p2,middle,p0);
+			storeTriNormals(p2,middle,p0);
         }
 
-		
-		private void addGroundTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2) {
+		/// <summary>
+		/// Calculate normal for particular triangle-face
+		/// </summary>
+		/// <param name="tp0">Tp0.</param>
+		/// <param name="tp1">Tp1.</param>
+		/// <param name="tp2">Tp2.</param>
+		private void storeTriNormals(Vector3 tp0, Vector3 tp1, Vector3 tp2) 
+		{
 			// compute the triangle normal
-			var triNormal = calcNormal(tp0,tp1,tp2);
+			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
 
-			// add the triangle to the ground mesh
-	        groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal));
-	        groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal));
-	        groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal)); 
-			
 			// accumulate the triangle normal for all three points.
-			storeNormal(tp0,triNormal);
-			storeNormal(tp1,triNormal);
-			storeNormal(tp2,triNormal);
+			storeNormal(tp0,triNormal,tp0,tp1,tp2);
+			storeNormal(tp1,triNormal,tp0,tp1,tp2);
+			storeNormal(tp2,triNormal,tp0,tp1,tp2);
 		}
 
         /// <summary>
@@ -234,23 +235,54 @@ namespace Example2DTileGame
 		/// </summary>
 		/// <param name="position">Position.</param>
 		/// <param name="triNormal">Tri normal.</param>
-        private void storeNormal(Vector3 position, Vector3 triNormal)
+		private void storeNormal(Vector3 position, Vector3 triNormal, Vector3 tp0, Vector3 tp1, Vector3 tp2)
         {
+
 			// step 1. find out if there is an entry positionToNormalList[position] 
 
-            if (positionToNormalList.ContainsKey(position))
-            {
-                positionToNormalList[position].Add(triNormal); // Add it into the list
-            }
+			if (positionToNormalList.ContainsKey (position)) {
+				positionToNormalList [position].Add (triNormal); // Add it into the list
+			}
 
             // step 2...if not, create an empty list and put it in positionToNormalList[position]
-            else
-            {
-                positionToNormalList.Add(position, new List<Vector3> { triNormal });
-            }
+            else {
+				positionToNormalList.Add (position, new List<Vector3> { triNormal });
+            
+			}
 
+			// Add them to groundMesh_Tri
+			addPointsToList (position, tp0, tp1, tp2, triNormal);
         }
 
+		/// <summary>
+		/// Adds points, height colors, and average normal into VertexData (moved from addGroundNormals)
+		/// </summary>
+		/// <param name="tp0">Tp0.</param>
+		/// <param name="tp1">Tp1.</param>
+		/// <param name="tp2">Tp2.</param>
+		/// <param name="triNormal">Tri normal.</param>
+		public void addPointsToList(Vector3 position, Vector3 tp0, Vector3 tp1, Vector3 tp2, Vector3 triNormal)
+		{
+			Vector3 avgNormal = new Vector3 (0, 0, 0);
+
+			foreach (var lists in positionToNormalList) 
+			{
+				List<Vector3> normalList = lists.Value; // Duplicate lists
+
+				foreach (Vector3 v in normalList) 
+				{
+					avgNormal += v;
+				}
+
+				avgNormal /= positionToNormalList.Count;
+
+			}
+
+			// Add the triangle to the ground mesh
+			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal));
+			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal));
+			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal)); 
+		}
 
         /// <summary>
         /// Render
@@ -282,10 +314,11 @@ namespace Example2DTileGame
                 foreach (VertexData v in groundMesh_Tri) {
                     GL.Color4(v.Color);
 					GL.Vertex3(v.Pos);
+					GL.Normal3 (v.averageNormal);
                 }
             }
             GL.End();
-
+			/*
             // step 4. Draw the per-triangle triFaceNormal
             GL.Begin(PrimitiveType.Lines);
             {
@@ -297,13 +330,13 @@ namespace Example2DTileGame
             }
             GL.End();
 
-            // step 5. Draw all average normals from the dictionary positionToNormalList
             GL.Begin(PrimitiveType.Lines);
             {
                 foreach (var kvp in positionToNormalList) {
 					Vector3 position = kvp.Key;
 					List<Vector3> normalList = kvp.Value;
 					Vector3 avgNormal = new Vector3(0,0,0);
+
 					foreach (var normal in normalList) {
 						avgNormal += normal;
 					}
@@ -316,7 +349,7 @@ namespace Example2DTileGame
                 }
             }
             GL.End();
-
+			*/
 
 			// boilerplate to render bounding sphere
 			// if (this.boundingSphere != null) {
