@@ -117,7 +117,7 @@ namespace Example2DTileGame
                             h1 = mapHeight[i + 0, j - 1];
                             h2 = mapHeight[i - 1, j + 0];
                             h3 = mapHeight[i + 1, j + 0];
-                            h4 = mapHeight[i + 1, j + 0];
+                            h4 = mapHeight[i + 0, j + 1];
 
                             totalHeight = h1 + h2 + h3 + h4;
                             avgHeight = totalHeight / 4;
