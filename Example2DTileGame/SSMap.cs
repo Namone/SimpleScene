@@ -279,9 +279,9 @@ namespace Example2DTileGame
 			}
 
 			// Add the triangle to the ground mesh
-			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal));
-			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal));
-			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal)); 
+			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, avgNormal));
+			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, avgNormal));
+			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, avgNormal)); 
 		}
 
         /// <summary>
@@ -312,10 +312,11 @@ namespace Example2DTileGame
             GL.Begin(PrimitiveType.Triangles);
             {
                 foreach (VertexData v in groundMesh_Tri) {
+					GL.Normal3 (v.averageNormal);
                     GL.Color4(v.Color);
 					GL.Vertex3(v.Pos);
-					GL.Normal3 (v.averageNormal);
-                }
+
+				}
             }
             GL.End();
 			/*
