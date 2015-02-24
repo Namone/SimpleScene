@@ -279,9 +279,9 @@ namespace Example2DTileGame
 			}
 
 			// Add the triangle to the ground mesh
-			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, avgNormal));
-			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, avgNormal));
-			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, avgNormal)); 
+			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, avgNormal)); // Add point 1
+			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, avgNormal)); // Add point 2 (middle/height)
+			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, avgNormal)); // Add point 3
 		}
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace Example2DTileGame
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public float average2x2(int x, int y)
+		public float average2x2(int x, int y)
         {
             return (mapHeight[x - 1, y - 1]
                 + mapHeight[x - 1, y]
@@ -379,20 +379,66 @@ namespace Example2DTileGame
             return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 5, height / MAX_HEIGHT * 5, 0);
         }
 
+		/// <summary>
+		/// 'Terraforming' where mouse clicks - refreshes map after each click
+		/// </summary>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		public void raiseMapHeightAt(float x, float y)
+		{
+
+			Vector3 newHeightVector = new Vector3 (0, 0, 0);
+			foreach (VertexData triVertex in groundMesh_Tri)
+			{
+				// Store current height
+				float currentHeight = triVertex.Pos.Y; 
+
+				// If the location is the same...
+				if (triVertex.Pos.X >= x && triVertex.Pos.Y >= y) {
+					// Inrease height by 3
+					currentHeight += 3; 
+				} 
+
+				// If 'if' statement does not run then it basically is creating an
+				// identical vector
+				newHeightVector = new Vector3 (triVertex.Pos.X, currentHeight, triVertex.Pos.Z);
+
+			}
+
+			refreshMapMesh (newHeightVector);
+		}
+
+		/// <summary>
+		/// Refreshes (re-draws) the map after terraforming/other changes
+		/// </summary>
+		/// <param name="height">Height.</param>
+		public void refreshMapMesh(Vector3 newHeight)
+		{
+			for (int i = 1; i < groundMesh_Tri.Count; i += 4) {
+				// Insert new VertexData at clicked point (some placeholder values)
+				groundMesh_Tri.Insert (i, new VertexData(newHeight, colorForHeight(newHeight.Y), new Vector3 (1, 1, 1)));
+			}
+
+			Console.WriteLine ("--> Map Refreshed");
+
+
+		}
+
+
 		public override bool PreciseIntersect(ref SSRay worldSpaceRay, ref float distanceAlongRay) {
 			// test to see if ray intersects any of the triangles in our mesh	
-			float localNearestContact = float.MaxValue;
-			bool hitMesh = false;		
+			float localNearestContact = float.MaxValue;;
+			bool hitMesh = false; // By default, it is not hitting the mesh	
 
 			// step 1. convert the ray from world space into object-local space
 			SSRay localRay = worldSpaceRay.Transformed (this.worldMat.Inverted ());
 
 			// step 2. iterate through our triangle mesh, testing each triangle
-			for (int n=0;n<groundMesh_Tri.Count;n+=3) {
+			for (int n = 0;n < groundMesh_Tri.Count;n += 3) {
 				// grab three points of a triangle
-				var V1 = groundMesh_Tri[n].Pos;
-				var V2 = groundMesh_Tri[n+1].Pos;
-				var V3 = groundMesh_Tri[n+2].Pos;
+				var V1 = groundMesh_Tri[n].Pos; // Point 1 
+				var V2 = groundMesh_Tri[n+1].Pos; // Point 2
+				var V3 = groundMesh_Tri[n+2].Pos; // Point 3
 
 				// run ray-to-triangle intersection test
 				float contact;
@@ -401,6 +447,16 @@ namespace Example2DTileGame
 					if (!hitMesh) { // first hit
 						localNearestContact = contact;
 						hitMesh = true;
+
+						float x = localRay.pos.X;
+						float y = localRay.pos.Y;
+						float z = localRay.pos.Z;
+
+						float heightChangeX = x / z;
+						float heightChangeY = y / z;
+
+						raiseMapHeightAt (heightChangeX, heightChangeY);
+
 					} else { // next hit
 						localNearestContact = Math.Min (localNearestContact, contact);	
 					}
