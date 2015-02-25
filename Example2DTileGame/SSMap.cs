@@ -387,7 +387,8 @@ namespace Example2DTileGame
 		public void raiseMapHeightAt(float x, float y)
 		{
 
-			Vector3 newHeightVector = new Vector3 (0, 0, 0);
+			Vector3 replacementVector = new Vector3 (0, 0, 0);
+			List<Vector3> tHeight = new List<Vector3> ();
 			foreach (VertexData triVertex in groundMesh_Tri)
 			{
 				// Store current height
@@ -395,31 +396,40 @@ namespace Example2DTileGame
 
 				// If the location is the same...
 				if (triVertex.Pos.X >= x && triVertex.Pos.Y >= y) {
-					// Inrease height by 3
+					// Inrease height by x
 					currentHeight += 3; 
+	
 				} 
 
 				// If 'if' statement does not run then it basically is creating an
 				// identical vector
-				newHeightVector = new Vector3 (triVertex.Pos.X, currentHeight, triVertex.Pos.Z);
 
+				replacementVector = new Vector3 (triVertex.Pos.X, currentHeight, triVertex.Pos.Z);
+				tHeight.Add (replacementVector);
 			}
 
-			refreshMapMesh (newHeightVector);
+			refreshMapMesh (tHeight);
 		}
 
 		/// <summary>
 		/// Refreshes (re-draws) the map after terraforming/other changes
 		/// </summary>
 		/// <param name="height">Height.</param>
-		public void refreshMapMesh(Vector3 newHeight)
+		public void refreshMapMesh(List<Vector3> listHeight)
 		{
-			for (int i = 1; i < groundMesh_Tri.Count; i += 4) {
-				// Insert new VertexData at clicked point (some placeholder values)
-				groundMesh_Tri.Insert (i, new VertexData(newHeight, colorForHeight(newHeight.Y), new Vector3 (1, 1, 1)));
-			}
+			groundMesh_Tri.Clear (); // Clear current map
+			Vector3 newVector;
 
-			Console.WriteLine ("--> Map Refreshed");
+			for (int i = 0; i < listHeight.Count; i++) {
+				newVector = listHeight [i];
+				groundMesh_Tri.Add (new VertexData (newVector, colorForHeight (newVector.Y), new Vector3 (0, 0, 0)));
+			}
+				
+			// Insert new VertexData at clicked point (some placeholder values)
+			//groundMesh_Tri.Add (new VertexData(newVector, colorForHeight(newVector.Y), new Vector3 (1, 1, 1)));
+			
+
+			Console.WriteLine ("INFO: Map Refreshed");
 
 
 		}
