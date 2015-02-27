@@ -384,25 +384,32 @@ namespace Example2DTileGame
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public void raiseMapHeightAt(float x, float y)
+		public void raiseMapHeightAt(Vector3 currentIntersect)
 		{
 
 			Vector3 replacementVector = new Vector3 (0, 0, 0);
 			List<Vector3> tHeight = new List<Vector3> ();
+			// Store for easier access
+			float x = currentIntersect.X;
+			float z = currentIntersect.Z;
+
+			Console.WriteLine ((int)x);
+			Console.WriteLine ((int)z);
+
+			for (int i = 0; i < mapHeight.GetLength (0); i++) {
+				for (int j = 0; j < mapHeight.GetLength (1); j++) {
+
+
+
+				}
+			}
+
 			foreach (VertexData triVertex in groundMesh_Tri)
 			{
 				// Store current height
 				float currentHeight = triVertex.Pos.Y; 
 
-				// If the location is the same...
-				if (triVertex.Pos.X >= x && triVertex.Pos.Y >= y) {
-					// Inrease height by x
-					currentHeight += 3; 
-	
-				} 
-
-				// If 'if' statement does not run then it basically is creating an
-				// identical vector
+				// TODO - Raise map height at current position			
 
 				replacementVector = new Vector3 (triVertex.Pos.X, currentHeight, triVertex.Pos.Z);
 				tHeight.Add (replacementVector);
@@ -434,6 +441,20 @@ namespace Example2DTileGame
 
 		}
 
+		/// <summary>
+		/// Returns map location point
+		/// </summary>
+		/// <returns>The space point to map location.</returns>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		public Vector3 worldSpacePointToMapLocation(float x, float z)
+		{
+			x /= squareWidth;
+			z /= squareWidth;
+
+			// Return vector2 with new worldLocation (mostly used to story x & z values)
+			return new Vector3(x, 0, z); 
+		}
 
 		public override bool PreciseIntersect(ref SSRay worldSpaceRay, ref float distanceAlongRay) {
 			// test to see if ray intersects any of the triangles in our mesh	
@@ -458,14 +479,13 @@ namespace Example2DTileGame
 						localNearestContact = contact;
 						hitMesh = true;
 
+						// The two points I need to translate to worldLocation
 						float x = localRay.pos.X;
-						float y = localRay.pos.Y;
 						float z = localRay.pos.Z;
 
-						float heightChangeX = x / z;
-						float heightChangeY = y / z;
-
-						raiseMapHeightAt (heightChangeX, heightChangeY);
+						Vector3 worldLocation = worldSpacePointToMapLocation (x, z);
+						Console.WriteLine (worldLocation.ToString ());
+						raiseMapHeightAt (worldLocation);
 
 					} else { // next hit
 						localNearestContact = Math.Min (localNearestContact, contact);	
