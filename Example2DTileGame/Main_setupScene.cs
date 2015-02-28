@@ -27,7 +27,7 @@ namespace Example2DTileGame
 
         // Positions for the camera
         float CameraX = 0.0f,
-              CameraY = 10.0f,
+              CameraY = 50.0f,
               CameraZ = 0.0f;
 
         public static SSObject[,] map = new SSObject[mapWidth, mapDepth];        

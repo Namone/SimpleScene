@@ -451,9 +451,10 @@ namespace Example2DTileGame
 		{
 			x /= squareWidth;
 			z /= squareWidth;
-
+			Vector3 returnVector = new Vector3(x, 0, z); 
+			Console.WriteLine (returnVector);
 			// Return vector2 with new worldLocation (mostly used to story x & z values)
-			return new Vector3(x, 0, z); 
+			return returnVector;
 		}
 
 		public override bool PreciseIntersect(ref SSRay worldSpaceRay, ref float distanceAlongRay) {
@@ -482,7 +483,7 @@ namespace Example2DTileGame
 						// The two points I need to translate to worldLocation
 						float x = localRay.pos.X;
 						float z = localRay.pos.Z;
-
+					
 						Vector3 worldLocation = worldSpacePointToMapLocation (x, z);
 						Console.WriteLine (worldLocation.ToString ());
 						raiseMapHeightAt (worldLocation);
