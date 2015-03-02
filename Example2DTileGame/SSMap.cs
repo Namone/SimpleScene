@@ -388,11 +388,10 @@ namespace Example2DTileGame
 		{
 
 			Vector3 replacementVector = new Vector3 (0, 0, 0);
-			float clickRange = 0.5f; 
 			List<Vector3> tempHeight = new List<Vector3> ();
 
 			Console.WriteLine (hitPoint);
-
+			float brushRadius = 5f;
 			int x = (int)hitPoint.X;
 			int z = (int)hitPoint.Z;
 
@@ -404,15 +403,10 @@ namespace Example2DTileGame
 
 				float triX = triVertex.Pos.X;
 				float triZ = triVertex.Pos.Z;
-				Console.WriteLine (triX + " - " + triZ);
 
-				float xRange = triX - x;
-				float zRange = triZ - z;
-
-				if (x == triX && z == triZ) {
+				if (triVertex.Pos.X - x <= x - brushRadius && 
+					triVertex.Pos.Z - z <= z - brushRadius) {
 					currentHeight += 1f;
-
-					Console.WriteLine ("Terraform");
 				}
 
 				replacementVector = new Vector3 (triX, currentHeight, triZ);
