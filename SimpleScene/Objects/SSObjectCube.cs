@@ -22,6 +22,7 @@ namespace SimpleScene
             GL.Vertex3(p0);
             GL.Vertex3(p2);
             GL.Vertex3(p3);
+
         }
 
 		public override void Render(ref SSRenderConfig renderConfig) {

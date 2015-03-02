@@ -17,6 +17,7 @@ namespace Example2DTileGame
 	partial class Example2DTileGame : OpenTK.GameWindow {
 
 		SSObject selectedObject = null;
+		Vector3 hitPoint;
 
 		private void adjustMouseCursor() {
 			// this doesn't seem to work on MacOS...
@@ -55,11 +56,12 @@ namespace Example2DTileGame
 					float distance = 0.0f;
 					if ( mapObject.PreciseIntersect(ref ray, ref distance) ) {
 						// we hit the map mesh! place an object there
-					
-						Vector3 hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
+
+						hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
+						mapObject.setHitPoint(hitPoint); // Terraforming purposes
 						var obj = new SSObjectCube();
 						obj.Pos = hitPoint;
-						scene.AddObject(obj);
+						//scene.AddObject(obj);
 					}
 				}
 
@@ -93,6 +95,11 @@ namespace Example2DTileGame
 				switch (e.KeyChar) {
 				}
 			};
+		}
+
+		public Vector3 getHitPoint()
+		{
+			return hitPoint;
 		}
 
 	}

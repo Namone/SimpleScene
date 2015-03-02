@@ -21,7 +21,7 @@ namespace Example2DTileGame
         float[,] mapHeight = new float[arrayW, arrayH];
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
-
+		Vector3 hitPoint = new Vector3 (0, 0, 0);
         // 1st value = Key
         // 2nd value = Value
         Dictionary<Vector3, List<Vector3>> positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
@@ -384,38 +384,43 @@ namespace Example2DTileGame
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public void raiseMapHeightAt(Vector3 currentIntersect)
+		public void raiseMapHeightAt()
 		{
 
 			Vector3 replacementVector = new Vector3 (0, 0, 0);
-			List<Vector3> tHeight = new List<Vector3> ();
-			// Store for easier access
-			float x = currentIntersect.X;
-			float z = currentIntersect.Z;
+			float clickRange = 0.5f; 
+			List<Vector3> tempHeight = new List<Vector3> ();
 
-			Console.WriteLine ((int)x);
-			Console.WriteLine ((int)z);
+			Console.WriteLine (hitPoint);
 
-			for (int i = 0; i < mapHeight.GetLength (0); i++) {
-				for (int j = 0; j < mapHeight.GetLength (1); j++) {
+			int x = (int)hitPoint.X;
+			int z = (int)hitPoint.Z;
 
-
-
-				}
-			}
-
+			Console.WriteLine ("HitPoint: " + x + " - " + z);
+		
 			foreach (VertexData triVertex in groundMesh_Tri)
 			{
-				// Store current height
-				float currentHeight = triVertex.Pos.Y; 
+				float currentHeight = triVertex.Pos.Y;
 
-				// TODO - Raise map height at current position			
+				float triX = triVertex.Pos.X;
+				float triZ = triVertex.Pos.Z;
+				Console.WriteLine (triX + " - " + triZ);
 
-				replacementVector = new Vector3 (triVertex.Pos.X, currentHeight, triVertex.Pos.Z);
-				tHeight.Add (replacementVector);
+				float xRange = triX - x;
+				float zRange = triZ - z;
+
+				if (x == triX && z == triZ) {
+					currentHeight += 1f;
+
+					Console.WriteLine ("Terraform");
+				}
+
+				replacementVector = new Vector3 (triX, currentHeight, triZ);
+
+				tempHeight.Add (replacementVector);
 			}
 
-			refreshMapMesh (tHeight);
+			refreshMapMesh (tempHeight);
 		}
 
 		/// <summary>
@@ -449,8 +454,8 @@ namespace Example2DTileGame
 		/// <param name="y">The y coordinate.</param>
 		public Vector3 worldSpacePointToMapLocation(float x, float z)
 		{
-			x /= squareWidth;
-			z /= squareWidth;
+			x = (int)x / (int)squareWidth;
+			z = (int)z / (int)squareWidth;
 			Vector3 returnVector = new Vector3(x, 0, z); 
 			Console.WriteLine (returnVector);
 			// Return vector2 with new worldLocation (mostly used to story x & z values)
@@ -464,9 +469,9 @@ namespace Example2DTileGame
 
 			// step 1. convert the ray from world space into object-local space
 			SSRay localRay = worldSpaceRay.Transformed (this.worldMat.Inverted ());
-
+			//Vector3 hitPoint = 
 			// step 2. iterate through our triangle mesh, testing each triangle
-			for (int n = 0;n < groundMesh_Tri.Count;n += 3) {
+			for (int n = 0; n < groundMesh_Tri.Count; n += 3) {
 				// grab three points of a triangle
 				var V1 = groundMesh_Tri[n].Pos; // Point 1 
 				var V2 = groundMesh_Tri[n+1].Pos; // Point 2
@@ -479,14 +484,7 @@ namespace Example2DTileGame
 					if (!hitMesh) { // first hit
 						localNearestContact = contact;
 						hitMesh = true;
-
-						// The two points I need to translate to worldLocation
-						float x = localRay.pos.X;
-						float z = localRay.pos.Z;
-					
-						Vector3 worldLocation = worldSpacePointToMapLocation (x, z);
-						Console.WriteLine (worldLocation.ToString ());
-						raiseMapHeightAt (worldLocation);
+						raiseMapHeightAt (); // Raise at hitPoint location
 
 					} else { // next hit
 						localNearestContact = Math.Min (localNearestContact, contact);	
@@ -503,6 +501,15 @@ namespace Example2DTileGame
 
 			}
 			return hitMesh;
+		}
+
+		/// <summary>
+		/// Set hitPoint equal to Vector3 calculated in Main_setupInput
+		/// </summary>
+		/// <param name="hitpoint">Hitpoint.</param>
+		public void setHitPoint(Vector3 hitpoint)
+		{
+			hitPoint = hitpoint;
 		}
 
     }
