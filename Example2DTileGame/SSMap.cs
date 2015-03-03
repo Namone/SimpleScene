@@ -391,11 +391,13 @@ namespace Example2DTileGame
 			List<Vector3> tempHeight = new List<Vector3> ();
 
 			Console.WriteLine (hitPoint);
-			float brushRadius = 5f;
-			int x = (int)hitPoint.X;
-			int z = (int)hitPoint.Z;
+			float radiusOfBrush = 5f;
+			int hitPointX = (int)hitPoint.X;
+			int hitPointZ = (int)hitPoint.Z;
+			Vector3 brushRadius = new Vector3 (hitPointX + radiusOfBrush, hitPoint.Y, hitPointZ + radiusOfBrush);
+			bool isInRadius = false;
 
-			Console.WriteLine ("HitPoint: " + x + " - " + z);
+			Console.WriteLine ("HitPoint: " + hitPointX + " - " + hitPointZ);
 		
 			foreach (VertexData triVertex in groundMesh_Tri)
 			{
@@ -404,9 +406,13 @@ namespace Example2DTileGame
 				float triX = triVertex.Pos.X;
 				float triZ = triVertex.Pos.Z;
 
-				if (triVertex.Pos.X - x <= x - brushRadius && 
-					triVertex.Pos.Z - z <= z - brushRadius) {
-					currentHeight += 1f;
+				if (triX - hitPointX <= brushRadius.X - hitPointX
+					&& triZ - hitPointZ <= brushRadius.Z - hitPointZ) {
+					isInRadius = true;
+				}
+
+				if (isInRadius) {
+					currentHeight += 1;
 				}
 
 				replacementVector = new Vector3 (triX, currentHeight, triZ);
