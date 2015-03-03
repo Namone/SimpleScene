@@ -55,13 +55,18 @@ namespace Example2DTileGame
 				if (mapObject != null) {
 					float distance = 0.0f;
 					if ( mapObject.PreciseIntersect(ref ray, ref distance) ) {
-						// we hit the map mesh! place an object there
-
+						// we hit the map mesh! calculate where...
 						hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
-						mapObject.setHitPoint(hitPoint); // Terraforming purposes
-						var obj = new SSObjectCube();
-						obj.Pos = hitPoint;
-						//scene.AddObject(obj);
+
+                        // terra forming
+						mapObject.terraRaiseLandAt(hitPoint, 2.5f); // Terraforming purposes
+
+                        // add object
+                        if (false) {                         
+						    var obj = new SSObjectCube();
+						    obj.Pos = hitPoint;
+						    scene.AddObject(obj);
+                        }
 					}
 				}
 

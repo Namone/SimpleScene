@@ -21,16 +21,11 @@ namespace Example2DTileGame
         float[,] mapHeight = new float[arrayW, arrayH];
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
-		Vector3 hitPoint = new Vector3 (0, 0, 0);
+
+        
         // 1st value = Key
         // 2nd value = Value
         Dictionary<Vector3, List<Vector3>> positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
-
-        Vector3 p0;
-        Vector3 p1;
-        Vector3 p2;
-        Vector3 p3;
-        Vector3 middle;
 
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
@@ -128,9 +123,19 @@ namespace Example2DTileGame
 
                     mapHeight = tHeights; // Set array used for drawing to the new values in the temp array
                 }
-
-
             }
+
+            // generate the mesh from heightmap
+            generateMeshFromHeightmap();
+                
+        }
+
+        private void generateMeshFromHeightmap() {
+
+            // clear existing map data
+            positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
+            groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
+            groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
 
             // construct the 3d mesh data
             for (int i = 1; i < mapHeight.GetLength(0) - 1; i++)
@@ -141,18 +146,40 @@ namespace Example2DTileGame
                     float squareCX = i * squareWidth;
                     float squareCY = j * squareWidth;
 
-                    p0 = new Vector3(squareCX, average2x2(i, j), squareCY);
-                    p1 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j), squareCY);
-                    p2 = new Vector3(squareCX, average2x2(i, j + 1), squareCY + squareWidth);
-                    p3 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j + 1), squareCY + squareWidth);
+                    var p0 = new Vector3(squareCX, average2x2(i, j), squareCY);
+                    var p1 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j), squareCY);
+                    var p2 = new Vector3(squareCX, average2x2(i, j + 1), squareCY + squareWidth);
+                    var p3 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j + 1), squareCY + squareWidth);
 
-                    middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
-        
+                    var middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
+
                     addToMapArray(p0, p1, p2, p3, middle);
-                   
+
                 }
             }
+
+            // sweep over the positionToNormalList, compute and populate the average normal for each vertex
+
+            for (int i = 0; i < groundMesh_Tri.Count; i++) {
+                // retrieve the list of normals at this point
+                var vertexData = groundMesh_Tri[i];
+                var normalList = positionToNormalList[vertexData.Pos];
+
+                // compute the average normal
+                var avgNormal = new Vector3(0,0,0);
+                foreach (var normal in positionToNormalList[vertexData.Pos]) {
+                    avgNormal += normal;
+                }
+                avgNormal /= normalList.Count;
+
+                // store the final average normal to the tri-mesh
+                vertexData.averageNormal = avgNormal;
+                groundMesh_Tri[i] = vertexData;
+            }
+
         }
+
+
 
         /// <summary>
         /// Add the points to the array list
@@ -187,16 +214,16 @@ namespace Example2DTileGame
             // step 2. add Triangles to groundMesh_Tri
              
             // bottom-left : middle : top-left
-			storeTriNormals(p0,middle,p1);
+			storeTriangle(p0,middle,p1);
 
 			// top-left : middle : top-right
-			storeTriNormals(p1,middle,p3);
+			storeTriangle(p1,middle,p3);
 
 			// top-right : middle : bottom-right
-			storeTriNormals(p3,middle,p2);
+			storeTriangle(p3,middle,p2);
 
             // bottom-right: middle : bottom-left
-			storeTriNormals(p2,middle,p0);
+			storeTriangle(p2,middle,p0);
         }
 
 		/// <summary>
@@ -205,15 +232,20 @@ namespace Example2DTileGame
 		/// <param name="tp0">Tp0.</param>
 		/// <param name="tp1">Tp1.</param>
 		/// <param name="tp2">Tp2.</param>
-		private void storeTriNormals(Vector3 tp0, Vector3 tp1, Vector3 tp2) 
+		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2) 
 		{
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
 
-			// accumulate the triangle normal for all three points.
-			storeNormal(tp0,triNormal,tp0,tp1,tp2);
-			storeNormal(tp1,triNormal,tp0,tp1,tp2);
-			storeNormal(tp2,triNormal,tp0,tp1,tp2);
+            // Add the triangle to the ground mesh
+            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal)); // Add point 1
+            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal)); // Add point 2 (middle/height)
+            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal)); // Add point 3
+
+			// accumulate the triangle normal for all three points. (later we will compute average normal)
+			accumulateTriNormal(tp0, triNormal);
+            accumulateTriNormal(tp1, triNormal);
+            accumulateTriNormal(tp2, triNormal);
 		}
 
         /// <summary>
@@ -231,27 +263,21 @@ namespace Example2DTileGame
 
 
 		/// <summary>
-		/// store the triangle normal in the accumulation dictionary, indexed by position
+		/// store the triangle in the accumulation dictionary, indexed by position
 		/// </summary>
 		/// <param name="position">Position.</param>
 		/// <param name="triNormal">Tri normal.</param>
-		private void storeNormal(Vector3 position, Vector3 triNormal, Vector3 tp0, Vector3 tp1, Vector3 tp2)
+        private void accumulateTriNormal(Vector3 position, Vector3 triNormal)
         {
-
 			// step 1. find out if there is an entry positionToNormalList[position] 
 
 			if (positionToNormalList.ContainsKey (position)) {
 				positionToNormalList [position].Add (triNormal); // Add it into the list
 			}
-
             // step 2...if not, create an empty list and put it in positionToNormalList[position]
             else {
-				positionToNormalList.Add (position, new List<Vector3> { triNormal });
-            
+				positionToNormalList.Add (position, new List<Vector3> { triNormal });            
 			}
-
-			// Add them to groundMesh_Tri
-			addPointsToList (position, tp0, tp1, tp2, triNormal);
         }
 
 		/// <summary>
@@ -277,11 +303,7 @@ namespace Example2DTileGame
 				avgNormal /= positionToNormalList.Count;
 
 			}
-
-			// Add the triangle to the ground mesh
-			groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, avgNormal)); // Add point 1
-			groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, avgNormal)); // Add point 2 (middle/height)
-			groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, avgNormal)); // Add point 3
+			
 		}
 
         /// <summary>
@@ -382,63 +404,24 @@ namespace Example2DTileGame
 		/// <summary>
 		/// 'Terraforming' where mouse clicks - refreshes map after each click
 		/// </summary>
-		/// <param name="x">The x coordinate.</param>
-		/// <param name="y">The y coordinate.</param>
-		public void raiseMapHeightAt()
-		{
+		public void terraRaiseLandAt(Vector3 worldSpacePoint, float raiseAmount) {
+            // first convert the world-space point into a 2d Map tile
 
-			Vector3 replacementVector = new Vector3 (0, 0, 0);
-			List<Vector3> tempHeight = new List<Vector3> ();
+            float tileSpace_x = worldSpacePoint.X;
+            float tileSpace_y = worldSpacePoint.Z;
 
-			Console.WriteLine (hitPoint);
-			float brushRadius = 5f;
-			int x = (int)hitPoint.X;
-			int z = (int)hitPoint.Z;
+            int tile_x = (int) (tileSpace_x / squareWidth);
+            int tile_y = (int) (tileSpace_y / squareWidth);
+          
+            Console.WriteLine("tileSpaceXY ({0},{1})  tileXY ({2},{3})", tileSpace_x,tileSpace_y,tile_x,tile_y);
 
-			Console.WriteLine ("HitPoint: " + x + " - " + z);
+			// float brushRadius = 0.5f;
 		
-			foreach (VertexData triVertex in groundMesh_Tri)
-			{
-				float currentHeight = triVertex.Pos.Y;
+            // raise the actual map data
+			mapHeight[tile_x,tile_y]+=raiseAmount;
 
-				float triX = triVertex.Pos.X;
-				float triZ = triVertex.Pos.Z;
-
-				if (triVertex.Pos.X - x <= x - brushRadius && 
-					triVertex.Pos.Z - z <= z - brushRadius) {
-					currentHeight += 1f;
-				}
-
-				replacementVector = new Vector3 (triX, currentHeight, triZ);
-
-				tempHeight.Add (replacementVector);
-			}
-
-			refreshMapMesh (tempHeight);
-		}
-
-		/// <summary>
-		/// Refreshes (re-draws) the map after terraforming/other changes
-		/// </summary>
-		/// <param name="height">Height.</param>
-		public void refreshMapMesh(List<Vector3> listHeight)
-		{
-			groundMesh_Tri.Clear (); // Clear current map
-			Vector3 newVector;
-
-			for (int i = 0; i < listHeight.Count; i++) {
-				newVector = listHeight [i];
-				groundMesh_Tri.Add (new VertexData (newVector, colorForHeight (newVector.Y), new Vector3 (0, 0, 0)));
-			}
-				
-			// Insert new VertexData at clicked point (some placeholder values)
-			//groundMesh_Tri.Add (new VertexData(newVector, colorForHeight(newVector.Y), new Vector3 (1, 1, 1)));
-			
-
-			Console.WriteLine ("INFO: Map Refreshed");
-
-
-		}
+            generateMeshFromHeightmap();
+        }
 
 		/// <summary>
 		/// Returns map location point
@@ -463,7 +446,8 @@ namespace Example2DTileGame
 
 			// step 1. convert the ray from world space into object-local space
 			SSRay localRay = worldSpaceRay.Transformed (this.worldMat.Inverted ());
-			//Vector3 hitPoint = 
+            Vector3 hitPoint = new Vector3(0, 0, 0);
+
 			// step 2. iterate through our triangle mesh, testing each triangle
 			for (int n = 0; n < groundMesh_Tri.Count; n += 3) {
 				// grab three points of a triangle
@@ -477,9 +461,7 @@ namespace Example2DTileGame
 					// we hit, so return distance
 					if (!hitMesh) { // first hit
 						localNearestContact = contact;
-						hitMesh = true;
-						raiseMapHeightAt (); // Raise at hitPoint location
-
+						hitMesh = true;						
 					} else { // next hit
 						localNearestContact = Math.Min (localNearestContact, contact);	
 					}
@@ -495,15 +477,6 @@ namespace Example2DTileGame
 
 			}
 			return hitMesh;
-		}
-
-		/// <summary>
-		/// Set hitPoint equal to Vector3 calculated in Main_setupInput
-		/// </summary>
-		/// <param name="hitpoint">Hitpoint.</param>
-		public void setHitPoint(Vector3 hitpoint)
-		{
-			hitPoint = hitpoint;
 		}
 
     }
