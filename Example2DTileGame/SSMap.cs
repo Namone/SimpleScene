@@ -27,8 +27,9 @@ namespace Example2DTileGame
         // 2nd value = Value
         Dictionary<Vector3, List<Vector3>> positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
 
-        List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
-        List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
+        // TODO: change these to arrays, then change them to VBOs
+        List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the line-segment verticies
+        List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies
 
         struct VertexData
         {
@@ -142,16 +143,19 @@ namespace Example2DTileGame
             {
                 for (int j = 1; j < mapHeight.GetLength(1) - 1; j++)
                 {
-                    float Middle = squareWidth / 2;
+                    float middleWidthOffset = squareWidth / 2;
                     float squareCX = i * squareWidth;
                     float squareCY = j * squareWidth;
 
+                    // each corner height is the average of the 2x2 grid around it
                     var p0 = new Vector3(squareCX, average2x2(i, j), squareCY);
                     var p1 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j), squareCY);
                     var p2 = new Vector3(squareCX, average2x2(i, j + 1), squareCY + squareWidth);
                     var p3 = new Vector3(squareCX + squareWidth, average2x2(i + 1, j + 1), squareCY + squareWidth);
 
-                    var middle = new Vector3(squareCX + Middle, mapHeight[i, j], squareCY + Middle);
+                    // the middleHeight should be the average of the corners of the tile..
+                    var middleHeight = (p0.Y + p1.Y + p2.Y + p3.Y) / 4.0f;
+                    var middle = new Vector3(squareCX + middleWidthOffset, middleHeight, squareCY + middleWidthOffset);
 
                     addToMapArray(p0, p1, p2, p3, middle);
 
