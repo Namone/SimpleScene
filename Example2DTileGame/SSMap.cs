@@ -421,6 +421,7 @@ namespace Example2DTileGame
 
 			float brushRadius = 3f;
 
+			// Move around selected point; raising the coordinates in the area
 			for (int x = tile_x; x < tile_x + brushRadius; x ++) {
 				for (int y = tile_y; y < tile_y + brushRadius; y ++) {
 					// TODO - Stop from going out of array
