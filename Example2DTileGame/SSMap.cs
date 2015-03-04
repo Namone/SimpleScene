@@ -411,31 +411,32 @@ namespace Example2DTileGame
 		public void terraRaiseLandAt(Vector3 worldSpacePoint, float raiseAmount) {
             // first convert the world-space point into a 2d Map tile
 
-            float tileSpace_x = worldSpacePoint.X;
+            float tileSpace_x = worldSpacePoint.X;            
             float tileSpace_y = worldSpacePoint.Z;
 
-            int tile_x = (int) (tileSpace_x / squareWidth);
-            int tile_y = (int) (tileSpace_y / squareWidth);
+            int tileGridSpace_x = (int) (tileSpace_x / squareWidth);
+            int tileGridSpace_y = (int) (tileSpace_y / squareWidth);
           
-            Console.WriteLine("tileSpaceXY ({0},{1})  tileXY ({2},{3})", tileSpace_x,tileSpace_y,tile_x,tile_y);
+            
+            Console.WriteLine("tileSpaceXY ({0},{1})  tileGridSpaceXY ({2},{3})", tileSpace_x,tileSpace_y,tileGridSpace_x,tileGridSpace_y);
 
-			float brushRadius = 10f;
-			bool inBounds = true;
-			// Move around selected point; raising the coordinates in the area
-			for (int x = tile_x; x < tile_x + brushRadius; x ++) {
-				for (int y = tile_y; y < tile_y + brushRadius; y ++) {
+			float brushRadius = 10f; // ideally, this should be evaluated in world space coordinates			
 
-					// Prevent array out of bounds
-					if (x >= mapHeight.GetLength(0) || y >= mapHeight.GetLength(1)
-						|| x >= mapHeight.GetLength(0) && y >= mapHeight.GetLength(1)) {
-						inBounds = false;
-					} 
-					// If it is in bounds...
-					else if (inBounds) {
-						mapHeight [x, y] += raiseAmount;
-					}
-									
+			// Loop over a bounding box around our brush
+            // ....we'll use the whole map to start (eventually make this tighter around brush for performance)
+			for (int x = 0; x < mapHeight.GetLength(0); x ++) {
+				for (int y = 0; y < mapHeight.GetLength(1); y ++) {
 
+                    // evaluate the brush.
+
+                    // calcualte the worldspace distance to the click point
+                    float distanceFromCenter = (new Vector2(x * squareWidth,y * squareWidth) - 
+                                                new Vector2(tileSpace_x,tileSpace_y)).Length;
+
+                    // if it is inside our brush, then modify the map here..
+                    if (distanceFromCenter < brushRadius) {
+                        mapHeight [x, y] += raiseAmount;
+                    }
 				}
 			}
 
