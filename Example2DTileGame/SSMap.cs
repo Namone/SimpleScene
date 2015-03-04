@@ -415,21 +415,12 @@ namespace Example2DTileGame
           
             Console.WriteLine("tileSpaceXY ({0},{1})  tileXY ({2},{3})", tileSpace_x,tileSpace_y,tile_x,tile_y);
 
-			float brushRadius = 0.5f;
-			// raise the actual map data
-			mapHeight[tile_x, tile_y] += raiseAmount;
+			float brushRadius = 3f;
 
-			// This idea... but not done like this
-			/*mapHeight[tile_x + brushRadius, tile_y + brushRadius] += raiseAmount;
-			mapHeight[tile_x - brushRadius, tile_y - brushRadius] += raiseAmount;
-			mapHeight[tile_x - brushRadius, tile_y + brushRadius] += raiseAmount;
-			mapHeight[tile_x + brushRadius, tile_y - brushRadius] += raiseAmount;*/
-
-			for (int i = 0; i < mapHeight.GetLength (0); i++) {
-				for (int j = 0; j < mapHeight.GetLength (1); j++) {
-					// TODO - If statement determining if current
-					// x, y coordinate is within 'range' of click
-					// coordinate
+			for (int x = tile_x; x < tile_x + brushRadius; x ++) {
+				for (int y = tile_y; y < tile_y + brushRadius; y ++) {
+					// TODO - Stop from going out of array
+					mapHeight [x, y] += raiseAmount;
 				}
 			}
 
