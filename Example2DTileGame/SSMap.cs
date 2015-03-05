@@ -95,10 +95,16 @@ namespace Example2DTileGame
             if (File.Exists(@"..\mapSave.xml")) {
                 Console.WriteLine("Info: Map-save found!");
                
+                // Returned array of saved heights
                 float[,] savedHeights = loadMap();
-
+                
                 for (int i = 0; i < mapHeight.GetLength(0); i++) {
                     for (int j = 0; j < mapHeight.GetLength(1); j++) {
+
+                        if (savedHeights[i, j] > 0 || savedHeights[i, j] < 0) {
+                            Console.WriteLine(savedHeights[i, j]);
+                        }
+
                         mapHeight[i, j].height = savedHeights[i, j];
 
                     }
@@ -436,7 +442,7 @@ namespace Example2DTileGame
             
             Console.WriteLine("tileSpaceXY ({0},{1})  tileGridSpaceXY ({2},{3})", tileSpace_x,tileSpace_y,tileGridSpace_x,tileGridSpace_y);
 
-			float brushRadius = 1f; // ideally, this should be evaluated in world space coordinates			
+			float brushRadius = 10f; // ideally, this should be evaluated in world space coordinates			
             
 			// Loop over a bounding box around our brush
             // ....we'll use the whole map to start (eventually make this tighter around brush for performance)
@@ -554,21 +560,19 @@ namespace Example2DTileGame
             float tileHeight;
             float[,] numStorage = new float [arrayW, arrayH];
             // Read the file - assigning values as we go
-            using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml")) {
-                for (int i = 0; i < mapHeight.GetLength(0); i++) {
-                    for (int j = 0; j < mapHeight.GetLength(1); j++) {
-
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreWhitespace = true;
+            using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml", settings)) {
+                for (int i = 0; i < numStorage.GetLength(0); i++) {
+                    for (int j = 0; j < numStorage.GetLength(1); j++) {
                         while (xmlReader.Read()) {
-                            if (xmlReader.IsStartElement()) {
-                                switch (xmlReader.Name) {
-                                    case "tileHeight":
-                                        if (xmlReader.Read()) {
-                                            float.TryParse(xmlReader.Value.Trim(), out tileHeight);
-                                            numStorage[i, j] = tileHeight;
+                            switch (xmlReader.Name) {
+                                case "tileHeight":
+                                    // Note: failing to parse here...
+                                    float.TryParse(xmlReader.Value, out tileHeight);
+                                    numStorage[i, j] = tileHeight;
 
-                                        }
-                                        break;
-                                }
+                                    break;
                             }
                         }
                     }
