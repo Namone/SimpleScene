@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
@@ -90,43 +91,48 @@ namespace Example2DTileGame
 
 		private void constructMap() {
 
-            Random rand = new Random();
-            float avgHeight;
-            float totalHeight;
+            // If we have a map-save file...
+            if (File.Exists(@"..\mapSave.xml")) {
+                Console.WriteLine("Info: Map-save found!");
 
-
-            // Store heights
-            for(int i = 0; i < mapHeight.GetLength(0) - 1; i++)
-            {
-                for(int j = 0; j < mapHeight.GetLength(1) - 1; j++)
-                {
-                    mapHeight[i, j].height = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT/2.0f; // Store random heights that are less than max height
-                }
+                // TODO - load values from loadMap() into heightMap[x, y] data
             }
 
-            // Relax the data 
-            {
-                MapTile[,] tHeights = new MapTile[arrayW, arrayH];
+            // If we don't already have a saved map...
+            else if (!File.Exists(@"..\mapSave.xml")) {
+                Random rand = new Random();
+                float avgHeight;
+                float totalHeight;
 
-                for(int num = 0; num < 4; num++)
-                {
-                    for(int i = 1; i < mapHeight.GetLength(0) - 1; i++)
-                    {
-                        for(int j = 1; j < mapHeight.GetLength(1) - 1; j++)
-                        {
-                            float h1 = mapHeight[i + 0, j - 1].height;
-                            float h2 = mapHeight[i - 1, j + 0].height;
-                            float h3 = mapHeight[i + 1, j + 0].height;
-                            float h4 = mapHeight[i + 0, j + 1].height;
 
-                            totalHeight = h1 + h2 + h3 + h4;
-                            avgHeight = totalHeight / 4;
-
-                            tHeights[i, j].height = avgHeight;
-                        }
+                // Store heights
+                for (int i = 0; i < mapHeight.GetLength(0) - 1; i++) {
+                    for (int j = 0; j < mapHeight.GetLength(1) - 1; j++) {
+                        mapHeight[i, j].height = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT / 2.0f; // Store random heights that are less than max height
                     }
+                }
 
-                    mapHeight = tHeights; // Set array used for drawing to the new values in the temp array
+                // Relax the data 
+                {
+                    MapTile[,] tHeights = new MapTile[arrayW, arrayH];
+
+                    for (int num = 0; num < 4; num++) {
+                        for (int i = 1; i < mapHeight.GetLength(0) - 1; i++) {
+                            for (int j = 1; j < mapHeight.GetLength(1) - 1; j++) {
+                                float h1 = mapHeight[i + 0, j - 1].height;
+                                float h2 = mapHeight[i - 1, j + 0].height;
+                                float h3 = mapHeight[i + 1, j + 0].height;
+                                float h4 = mapHeight[i + 0, j + 1].height;
+
+                                totalHeight = h1 + h2 + h3 + h4;
+                                avgHeight = totalHeight / 4;
+
+                                tHeights[i, j].height = avgHeight;
+                            }
+                        }
+
+                        mapHeight = tHeights; // Set array used for drawing to the new values in the temp array
+                    }
                 }
             }
 
@@ -528,14 +534,18 @@ namespace Example2DTileGame
 
                 xmlWriter.WriteEndElement();
                 xmlWriter.WriteEndDocument();
-
+                
                 Console.WriteLine("Info: Map Saved!");
             }
         }
 
+        /// <summary>
+        /// Read map data and set equal to mapHeight values
+        /// </summary>
         public void loadMap() {
-
+            using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml")) {
+                // TODO - read data from XML file and set equal to mapHeight data structure
+            }
         }
-
     }
 }

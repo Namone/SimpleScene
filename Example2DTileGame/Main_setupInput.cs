@@ -71,13 +71,6 @@ namespace Example2DTileGame
 					}
 				}
 
-                // Save the game
-                if (Keyboard[Key.S]) {
-
-
-
-                }
-
 			};
 			this.MouseUp += (object sender, MouseButtonEventArgs e) => { 
 				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
