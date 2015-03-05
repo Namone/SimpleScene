@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,9 @@ namespace Example2DTileGame
         //-------------------------------------------------------------------------------------------
         static int arrayW = 30;
         static int arrayH = 30;
-        float[,] mapHeight = new float[arrayW, arrayH];
+        MapTile[,] mapHeight = new MapTile[arrayW, arrayH];
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
-
         
         // 1st value = Key
         // 2nd value = Value
@@ -31,12 +31,19 @@ namespace Example2DTileGame
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the line-segment verticies
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies
 
+        struct MapTile
+        {
+            public float height;
+            public int tileType;
+        }
+
         struct VertexData
         {
             public Vector3 Pos;
             public Color4 Color;
             public Vector3 triangleFaceNormal;
             public Vector3 averageNormal;
+            //public Vector2 uvCoord; // 2D texture coordinate
 
             public VertexData(Vector3 pos, Color4 color, Vector3 normal)
             {
@@ -82,6 +89,7 @@ namespace Example2DTileGame
 		}
 
 		private void constructMap() {
+
             Random rand = new Random();
             float avgHeight;
             float totalHeight;
@@ -92,17 +100,13 @@ namespace Example2DTileGame
             {
                 for(int j = 0; j < mapHeight.GetLength(1) - 1; j++)
                 {
-                    mapHeight[i, j] = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT/2.0f; // Store random heights that are less than max height
+                    mapHeight[i, j].height = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT/2.0f; // Store random heights that are less than max height
                 }
             }
 
             // Relax the data 
             {
-                float[,] tHeights = new float[arrayW, arrayH];
-                float h1;
-                float h2;
-                float h3;
-                float h4;
+                MapTile[,] tHeights = new MapTile[arrayW, arrayH];
 
                 for(int num = 0; num < 4; num++)
                 {
@@ -110,15 +114,15 @@ namespace Example2DTileGame
                     {
                         for(int j = 1; j < mapHeight.GetLength(1) - 1; j++)
                         {
-                            h1 = mapHeight[i + 0, j - 1];
-                            h2 = mapHeight[i - 1, j + 0];
-                            h3 = mapHeight[i + 1, j + 0];
-                            h4 = mapHeight[i + 0, j + 1];
+                            float h1 = mapHeight[i + 0, j - 1].height;
+                            float h2 = mapHeight[i - 1, j + 0].height;
+                            float h3 = mapHeight[i + 1, j + 0].height;
+                            float h4 = mapHeight[i + 0, j + 1].height;
 
                             totalHeight = h1 + h2 + h3 + h4;
                             avgHeight = totalHeight / 4;
 
-                            tHeights[i, j] = avgHeight;
+                            tHeights[i, j].height = avgHeight;
                         }
                     }
 
@@ -317,7 +321,6 @@ namespace Example2DTileGame
         public override void Render(ref SSRenderConfig renderConfig)
         {
             base.Render(ref renderConfig);
-
             // step 1. Set-up render
             SSShaderProgram.DeactivateAll(); // Disable GLSL
             GL.Disable(EnableCap.Texture2D);
@@ -394,10 +397,10 @@ namespace Example2DTileGame
         /// <returns></returns>
 		public float average2x2(int x, int y)
         {
-            return (mapHeight[x - 1, y - 1]
-                + mapHeight[x - 1, y]
-                + mapHeight[x, y - 1]
-                + mapHeight[x, y]) / 4.0f;
+            return (mapHeight[x - 1, y - 1].height
+                + mapHeight[x - 1, y].height
+                + mapHeight[x, y - 1].height
+                + mapHeight[x, y].height) / 4.0f;
         }
 
         Color4 colorForHeight(float height)
@@ -420,23 +423,27 @@ namespace Example2DTileGame
             
             Console.WriteLine("tileSpaceXY ({0},{1})  tileGridSpaceXY ({2},{3})", tileSpace_x,tileSpace_y,tileGridSpace_x,tileGridSpace_y);
 
-			float brushRadius = 10f; // ideally, this should be evaluated in world space coordinates			
-
+			float brushRadius = 1f; // ideally, this should be evaluated in world space coordinates			
+            
 			// Loop over a bounding box around our brush
             // ....we'll use the whole map to start (eventually make this tighter around brush for performance)
 			for (int x = 0; x < mapHeight.GetLength(0); x ++) {
 				for (int y = 0; y < mapHeight.GetLength(1); y ++) {
-
+                    bool isCenter = false; // Default
                     // evaluate the brush.
 
                     // calcualte the worldspace distance to the click point
-                    float distanceFromCenter = (new Vector2(x * squareWidth,y * squareWidth) - 
-                                                new Vector2(tileSpace_x,tileSpace_y)).Length;
+                    float distanceFromCenter = (new Vector2(x * squareWidth, y * squareWidth) - 
+                                                new Vector2(tileSpace_x, tileSpace_y)).Length;
+
+                    if (x == tileGridSpace_x && y == tileGridSpace_y) {
+                        isCenter = true;
+                    }
 
                     // if it is inside our brush, then modify the map here..
-                    if (distanceFromCenter < brushRadius) {
-                        mapHeight [x, y] += raiseAmount;
-                    }
+                    if (distanceFromCenter < brushRadius || isCenter) {
+                        mapHeight [x, y].height += raiseAmount;
+                    }               
 				}
 			}
 
@@ -498,6 +505,37 @@ namespace Example2DTileGame
 			}
 			return hitMesh;
 		}
+        /// <summary>
+        /// Save the map in an XML file
+        /// </summary>
+        public void saveMap() {
+            // Formatting
+            XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
+            using (XmlWriter xmlWriter = XmlWriter.Create(@"C:\Users\Alex\Desktop\xmlMapFile.xml", xmlSettings)) {
+
+                xmlWriter.WriteStartDocument(); // Start writing  
+                xmlWriter.WriteStartElement("MapTiles");
+
+                // Move through mapHeights array (containing MapTile structs) and save the values 
+                for (int i = 0; i < mapHeight.GetLength(0); i++) {
+                    for (int j = 0; j < mapHeight.GetLength(1); j++) {
+                        xmlWriter.WriteStartElement("TileProperties");
+                        xmlWriter.WriteElementString("tileHeight", mapHeight[i, j].height.ToString());
+                        xmlWriter.WriteElementString("tileID", mapHeight[i, j].tileType.ToString());
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndDocument();
+
+                Console.WriteLine("Info: Map Saved!");
+            }
+        }
+
+        public void loadMap() {
+
+        }
 
     }
 }

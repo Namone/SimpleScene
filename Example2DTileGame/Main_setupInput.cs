@@ -60,7 +60,8 @@ namespace Example2DTileGame
 
                         // terra forming
 						mapObject.terraRaiseLandAt(hitPoint, 2.5f); // Terraforming purposes
-
+                        Console.WriteLine("Info: Saving Map...");
+                        mapObject.saveMap();
                         // add object
                         if (false) {                         
 						    var obj = new SSObjectCube();
@@ -70,6 +71,12 @@ namespace Example2DTileGame
 					}
 				}
 
+                // Save the game
+                if (Keyboard[Key.S]) {
+
+
+
+                }
 
 			};
 			this.MouseUp += (object sender, MouseButtonEventArgs e) => { 
