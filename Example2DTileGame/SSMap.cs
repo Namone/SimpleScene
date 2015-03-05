@@ -32,7 +32,7 @@ namespace Example2DTileGame
         List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the line-segment verticies
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies
 
-        struct MapTile
+        public struct MapTile
         {
             public float height;
             public int tileType;
@@ -91,14 +91,21 @@ namespace Example2DTileGame
 
 		private void constructMap() {
 
-            // If we have a map-save file...
+            // If we have a height map save file...
             if (File.Exists(@"..\mapSave.xml")) {
                 Console.WriteLine("Info: Map-save found!");
+               
+                float[,] savedHeights = loadMap();
 
-                // TODO - load values from loadMap() into heightMap[x, y] data
+                for (int i = 0; i < mapHeight.GetLength(0); i++) {
+                    for (int j = 0; j < mapHeight.GetLength(1); j++) {
+                        mapHeight[i, j].height = savedHeights[i, j];
+
+                    }
+                }
             }
 
-            // If we don't already have a saved map...
+            // If we don't already have a saved height map -> make a new map
             else if (!File.Exists(@"..\mapSave.xml")) {
                 Random rand = new Random();
                 float avgHeight;
@@ -542,10 +549,34 @@ namespace Example2DTileGame
         /// <summary>
         /// Read map data and set equal to mapHeight values
         /// </summary>
-        public void loadMap() {
+        public float[,] loadMap() {
+
+            float tileHeight;
+            float[,] numStorage = new float [arrayW, arrayH];
+            // Read the file - assigning values as we go
             using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml")) {
-                // TODO - read data from XML file and set equal to mapHeight data structure
-            }
+                for (int i = 0; i < mapHeight.GetLength(0); i++) {
+                    for (int j = 0; j < mapHeight.GetLength(1); j++) {
+
+                        while (xmlReader.Read()) {
+                            if (xmlReader.IsStartElement()) {
+                                switch (xmlReader.Name) {
+                                    case "tileHeight":
+                                        if (xmlReader.Read()) {
+                                            float.TryParse(xmlReader.Value.Trim(), out tileHeight);
+                                            numStorage[i, j] = tileHeight;
+
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return numStorage;
+                
+             }             
         }
     }
 }
