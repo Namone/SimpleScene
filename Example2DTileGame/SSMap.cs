@@ -511,7 +511,7 @@ namespace Example2DTileGame
         public void saveMap() {
             // Formatting
             XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
-            using (XmlWriter xmlWriter = XmlWriter.Create(@"C:\Users\Alex\Desktop\xmlMapFile.xml", xmlSettings)) {
+            using (XmlWriter xmlWriter = XmlWriter.Create(@"..\mapSave.xml", xmlSettings)) {
 
                 xmlWriter.WriteStartDocument(); // Start writing  
                 xmlWriter.WriteStartElement("MapTiles");
