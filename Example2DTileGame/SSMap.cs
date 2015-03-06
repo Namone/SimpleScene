@@ -563,8 +563,7 @@ namespace Example2DTileGame
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = true;
             using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml", settings)) {
-                for (int i = 0; i < numStorage.GetLength(0); i++) {
-                    for (int j = 0; j < numStorage.GetLength(1); j++) {
+
                         while (xmlReader.Read()) {
                             switch (xmlReader.Name) {
                                 case "MapTile":
@@ -575,8 +574,7 @@ namespace Example2DTileGame
                                     numStorage[x, y] = height;
 
                                     break;
-                            }
-                        }
+
                     }
                 }
 
