@@ -538,9 +538,10 @@ namespace Example2DTileGame
                 // Move through mapHeights array (containing MapTile structs) and save the values 
                 for (int i = 0; i < mapHeight.GetLength(0); i++) {
                     for (int j = 0; j < mapHeight.GetLength(1); j++) {
-                        xmlWriter.WriteStartElement("TileProperties");
-                        xmlWriter.WriteElementString("tileHeight", mapHeight[i, j].height.ToString());
-                        xmlWriter.WriteElementString("tileID", mapHeight[i, j].tileType.ToString());
+                        xmlWriter.WriteStartElement("MapTile");
+                        xmlWriter.WriteAttributeString("x", i.ToString());
+                        xmlWriter.WriteAttributeString("y", j.ToString());
+                        xmlWriter.WriteAttributeString("height", mapHeight[i, j].height.ToString());
                         xmlWriter.WriteEndElement();
                     }
                 }
@@ -557,7 +558,6 @@ namespace Example2DTileGame
         /// </summary>
         public float[,] loadMap() {
 
-            float tileHeight;
             float[,] numStorage = new float [arrayW, arrayH];
             // Read the file - assigning values as we go
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -567,10 +567,12 @@ namespace Example2DTileGame
                     for (int j = 0; j < numStorage.GetLength(1); j++) {
                         while (xmlReader.Read()) {
                             switch (xmlReader.Name) {
-                                case "tileHeight":
-                                    // Note: failing to parse here...
-                                    float.TryParse(xmlReader.Value, out tileHeight);
-                                    numStorage[i, j] = tileHeight;
+                                case "MapTile":
+                                    int x = int.Parse(xmlReader.GetAttribute(0)); // get x coord
+                                    int y = int.Parse(xmlReader.GetAttribute(1)); // get y coord
+                                    float height = float.Parse(xmlReader.GetAttribute(2)); // get height  
+
+                                    numStorage[x, y] = height;
 
                                     break;
                             }
