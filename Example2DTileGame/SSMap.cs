@@ -571,7 +571,7 @@ namespace Example2DTileGame
                                     int x = int.Parse(xmlReader.GetAttribute(0)); // get x coord
                                     int y = int.Parse(xmlReader.GetAttribute(1)); // get y coord
                                     float height = float.Parse(xmlReader.GetAttribute(2)); // get height  
-
+                              
                                     numStorage[x, y] = height;
 
                                     break;

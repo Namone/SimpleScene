@@ -60,8 +60,6 @@ namespace Example2DTileGame
 
                         // terra forming
 						mapObject.terraRaiseLandAt(hitPoint, 2.5f); // Terraforming purposes
-                        Console.WriteLine("Info: Saving Map...");
-                        mapObject.saveMap();
                         // add object
                         if (false) {                         
 						    var obj = new SSObjectCube();

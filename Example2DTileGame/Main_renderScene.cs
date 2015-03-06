@@ -28,7 +28,13 @@ namespace Example2DTileGame
 		protected override void OnRenderFrame (FrameEventArgs e)
 		{
 			base.OnRenderFrame (e);
+            
+            // Hotkey to save the map
+            
+            if (Keyboard[Key.P]) {
+                mapObject.saveMap();
 
+            }
 			// NOTE: this is a workaround for the fact that the ThirdPersonCamera is not parented to the target...
 			//   before we can remove this, we need to parent it properly, currently it's transform only follows
 			//   the target during Update() and input event processing.
