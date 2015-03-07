@@ -541,6 +541,7 @@ namespace Example2DTileGame
                         xmlWriter.WriteStartElement("MapTile");
                         xmlWriter.WriteAttributeString("x", i.ToString());
                         xmlWriter.WriteAttributeString("y", j.ToString());
+                        xmlWriter.WriteAttributeString("type", mapHeight[i, j].tileType.ToString());
                         xmlWriter.WriteAttributeString("height", mapHeight[i, j].height.ToString());
                         xmlWriter.WriteEndElement();
                     }
@@ -574,6 +575,8 @@ namespace Example2DTileGame
                                     numStorage[x, y] = height;
 
                                     break;
+
+                                
 
                     }
                 }
