@@ -35,6 +35,10 @@ namespace Example2DTileGame
                 mapObject.saveMap();
 
             }
+
+            if (Keyboard[Key.O]) {
+                mapObject.deleteMapSave();
+            }
 			// NOTE: this is a workaround for the fact that the ThirdPersonCamera is not parented to the target...
 			//   before we can remove this, we need to parent it properly, currently it's transform only follows
 			//   the target during Update() and input event processing.

@@ -570,7 +570,7 @@ namespace Example2DTileGame
                                 case "MapTile":
                                     int x = int.Parse(xmlReader.GetAttribute(0)); // get x coord
                                     int y = int.Parse(xmlReader.GetAttribute(1)); // get y coord
-                                    float height = float.Parse(xmlReader.GetAttribute(2)); // get height  
+                                    float height = float.Parse(xmlReader.GetAttribute(3)); // get height  
                               
                                     numStorage[x, y] = height;
 
@@ -584,6 +584,15 @@ namespace Example2DTileGame
                 return numStorage;
                 
              }             
+        }
+
+        /// <summary>
+        /// Delete map-save file and generates new map
+        /// </summary>
+        public void deleteMapSave() {
+            File.Delete(@"..\mapSave.xml");
+            Console.WriteLine("Info: Map-save deleted!");
+            constructMap();
         }
     }
 }
