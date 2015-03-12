@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,22 +45,24 @@ namespace Example2DTileGame
             public Color4 Color;
             public Vector3 triangleFaceNormal;
             public Vector3 averageNormal;
-            //public Vector2 uvCoord; // 2D texture coordinate
+            public Vector2 uvCoord; // 2D texture coordinate
 
-            public VertexData(Vector3 pos, Color4 color, Vector3 normal)
+            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector2 uv)
             {
                 this.Pos = pos;
                 this.Color = color;
                 this.triangleFaceNormal = normal;
                 this.averageNormal = new Vector3(0, 0, 0);
+                this.uvCoord = uv;
             }
 
-            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector3 avgNormal)
+            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector3 avgNormal, Vector2 uv)
             {
                 this.Pos = pos;
                 this.Color = color;
                 this.triangleFaceNormal = normal;
                 this.averageNormal = avgNormal;
+                this.uvCoord = uv;
             }
         }
         //-------------------------------------------------------------------------------------------
@@ -102,7 +105,7 @@ namespace Example2DTileGame
                     for (int j = 0; j < mapHeight.GetLength(1); j++) {
 
                         if (savedHeights[i, j] > 0 || savedHeights[i, j] < 0) {
-                            Console.WriteLine(savedHeights[i, j]);
+                            //Console.WriteLine(savedHeights[i, j]);
                         }
 
                         mapHeight[i, j].height = savedHeights[i, j];
@@ -263,11 +266,11 @@ namespace Example2DTileGame
 		{
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
-
+            float uvX = 0, uvY = 0;
             // Add the triangle to the ground mesh
-            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal)); // Add point 1
-            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal)); // Add point 2 (middle/height)
-            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal)); // Add point 3
+            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, new Vector2(uvX, uvY))); // Add point 1
+            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, new Vector2(uvX, uvY + 1))); // Add point 2 (middle/height)
+            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, new Vector2(uvX + 1, uvY))); // Add point 3
 
 			// accumulate the triangle normal for all three points. (later we will compute average normal)
 			accumulateTriNormal(tp0, triNormal);
@@ -342,7 +345,7 @@ namespace Example2DTileGame
             base.Render(ref renderConfig);
             // step 1. Set-up render
             SSShaderProgram.DeactivateAll(); // Disable GLSL
-            GL.Disable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Texture2D);
             GL.Disable(EnableCap.Lighting);
             // End of set-up
 
@@ -359,6 +362,7 @@ namespace Example2DTileGame
             // step 3. Draw the triangle 'ground' mesh
             GL.Begin(PrimitiveType.Triangles);
             {
+                loadTexture("jrpgbrick"); 
                 foreach (VertexData v in groundMesh_Tri) {
 					GL.Normal3 (v.averageNormal);
                     GL.Color4(v.Color);
@@ -582,7 +586,7 @@ namespace Example2DTileGame
                 }
 
                 return numStorage;
-                
+
              }             
         }
 
@@ -593,6 +597,35 @@ namespace Example2DTileGame
             File.Delete(@"..\mapSave.xml");
             Console.WriteLine("Info: Map-save deleted!");
             constructMap();
+        }
+
+        ////////////////////
+        //Texture Loading//
+        //////////////////
+
+        public void loadTexture(string fileName) {
+
+            // Check to make sure the file exists before trying to load it
+            if (File.Exists(@"..\" + fileName + ".png")) {
+                Bitmap mapTexture = new Bitmap(@"..\" + fileName + ".png");
+
+                // Load the bitmap into mapTextureData
+                System.Drawing.Imaging.BitmapData mapTextureData = mapTexture.LockBits(
+                    new Rectangle(0, 0, mapTexture.Width, mapTexture.Height), 
+                    System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+                int Texture = GL.GenTexture();
+
+                GL.GenTextures(1, out Texture);
+                GL.BindTexture(TextureTarget.Texture2D, Texture);
+
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, mapTextureData.Width,
+                    mapTextureData.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mapTextureData.Scan0);
+
+                mapTexture.UnlockBits(mapTextureData); // release the data            
+                
+           }
         }
     }
 }
