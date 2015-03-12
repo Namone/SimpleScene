@@ -25,18 +25,32 @@ namespace Example2DTileGame
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
         
+        int gl_map_texture_id = -1;
+        SSTexture myTex;        
+
         // 1st value = Key
         // 2nd value = Value
         Dictionary<Vector3, List<Vector3>> positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
 
         // TODO: change these to arrays, then change them to VBOs
-        List<VertexData> groundMesh_Lines = new List<VertexData>(); // List to hold the line-segment verticies
+        List<LineVertexData> groundMesh_Lines = new List<LineVertexData>(); // List to hold the line-segment verticies
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies
 
         public struct MapTile
         {
             public float height;
             public int tileType;
+        }
+
+        struct LineVertexData {
+            public Vector3 Pos;
+            public Color4 Color;
+
+            public LineVertexData(Vector3 pos, Color4 color)               
+            {
+                this.Pos = pos;
+                this.Color = color;
+            }
         }
 
         struct VertexData
@@ -47,22 +61,18 @@ namespace Example2DTileGame
             public Vector3 averageNormal;
             public Vector2 uvCoord; // 2D texture coordinate
 
-            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector2 uv)
+            public VertexData(
+                Vector3 pos, 
+                Color4 color, 
+                Vector3 normal,                 
+                Vector2 uv)
             {
                 this.Pos = pos;
                 this.Color = color;
-                this.triangleFaceNormal = normal;
-                this.averageNormal = new Vector3(0, 0, 0);
+                this.triangleFaceNormal = normal;                
                 this.uvCoord = uv;
-            }
 
-            public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector3 avgNormal, Vector2 uv)
-            {
-                this.Pos = pos;
-                this.Color = color;
-                this.triangleFaceNormal = normal;
-                this.averageNormal = avgNormal;
-                this.uvCoord = uv;
+                this.averageNormal = new Vector3(0, 0, 0); // this is never known at construct time
             }
         }
         //-------------------------------------------------------------------------------------------
@@ -76,7 +86,7 @@ namespace Example2DTileGame
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-			
+            loadTexture("jrpgbrick"); 
 		}
 
 		private void setupMesh() {
@@ -161,7 +171,7 @@ namespace Example2DTileGame
 
             // clear existing map data
             positionToNormalList = new Dictionary<Vector3, List<Vector3>>();
-            groundMesh_Lines = new List<VertexData>(); // List to hold the vectors
+            groundMesh_Lines = new List<LineVertexData>(); // List to hold the vectors
             groundMesh_Tri = new List<VertexData>(); // List to hold vectors of triangles
 
             // construct the 3d mesh data
@@ -227,16 +237,16 @@ namespace Example2DTileGame
             // step 1. add lines to groundMesh_Lines
 
 			// ...box around the tile
-            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));  
-            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y)));
-            //groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y)));
-            //groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new LineVertexData(p1, colorForHeight(p1.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new LineVertexData(p2, colorForHeight(p2.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new LineVertexData(p3, colorForHeight(p3.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new LineVertexData(p1, colorForHeight(p1.Y)));
 
             // ...lines to the middle
-            //groundMesh_Lines.Add(new VertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            //groundMesh_Lines.Add(new VertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            //groundMesh_Lines.Add(new VertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
-            //groundMesh_Lines.Add(new VertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new VertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p0, colorForHeight(p0.Y))); groundMesh_Lines.Add(new LineVertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p1, colorForHeight(p1.Y))); groundMesh_Lines.Add(new LineVertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p2, colorForHeight(p2.Y))); groundMesh_Lines.Add(new LineVertexData(middle, colorForHeight(middle.Y)));
+            groundMesh_Lines.Add(new LineVertexData(p3, colorForHeight(p3.Y))); groundMesh_Lines.Add(new LineVertexData(middle, colorForHeight(middle.Y)));
 
 
             //----------------------------------------------------
@@ -345,29 +355,46 @@ namespace Example2DTileGame
             base.Render(ref renderConfig);
             // step 1. Set-up render
             SSShaderProgram.DeactivateAll(); // Disable GLSL
-            GL.Enable(EnableCap.Texture2D);
             GL.Disable(EnableCap.Lighting);
+
             // End of set-up
 
             // step 2. Draw the wireframe 'outline' of the map
             GL.Begin(PrimitiveType.Lines);
             {
-                foreach (VertexData v in groundMesh_Lines) {
-                    GL.Color4(v.Color);
+                foreach (LineVertexData v in groundMesh_Lines) {
+                    GL.Color4(Color.Green);
+                    // GL.Color4(v.Color);
                     GL.Vertex3(v.Pos); // Draw
                 }
             }
             GL.End();
 
             // step 3. Draw the triangle 'ground' mesh
+            // setup texture
+            GL.Disable(EnableCap.Lighting);
+            
+            GL.ActiveTexture(TextureUnit.Texture0); // select texture unit 0
+            GL.Enable(EnableCap.Texture2D);         // enable the texture unit            
+
+            if (false) {
+                // use the texture we loaded the "hard way"
+                GL.BindTexture(TextureTarget.Texture2D,gl_map_texture_id);
+            } else {
+                // use the texture we loaded the "easy way"
+                GL.BindTexture(TextureTarget.Texture2D, myTex.TextureID);
+            }
+
             GL.Begin(PrimitiveType.Triangles);
-            {
-                loadTexture("jrpgbrick"); 
+            {                
                 foreach (VertexData v in groundMesh_Tri) {
+                    // first, attributes..
 					GL.Normal3 (v.averageNormal);
                     GL.Color4(v.Color);
-					GL.Vertex3(v.Pos);
+                    GL.TexCoord2(v.uvCoord);
 
+                    // last, vertex...
+                    GL.Vertex3(v.Pos);                    
 				}
             }
             GL.End();
@@ -605,9 +632,16 @@ namespace Example2DTileGame
 
         public void loadTexture(string fileName) {
 
-            // Check to make sure the file exists before trying to load it
-            if (File.Exists(@"..\" + fileName + ".png")) {
-                Bitmap mapTexture = new Bitmap(@"..\" + fileName + ".png");
+            // this is the SimpleScene way...
+            var ctx = new SSAssetManager.Context("maptextures");
+            myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName + ".png");
+
+            // this is the hard way....            
+            string fullPath = @"..\..\Assets\maptextures\" + fileName + ".png";
+            if (!File.Exists(fullPath)) {
+                throw new Exception("no such file: " + fullPath);
+            } else {
+                Bitmap mapTexture = new Bitmap(fullPath);
 
                 // Load the bitmap into mapTextureData
                 System.Drawing.Imaging.BitmapData mapTextureData = mapTexture.LockBits(
@@ -615,17 +649,17 @@ namespace Example2DTileGame
                     System.Drawing.Imaging.ImageLockMode.ReadOnly,
                     System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-                int Texture = GL.GenTexture();
-
-                GL.GenTextures(1, out Texture);
-                GL.BindTexture(TextureTarget.Texture2D, Texture);
+                gl_map_texture_id = GL.GenTexture();
+                
+                GL.BindTexture(TextureTarget.Texture2D, gl_map_texture_id);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, mapTextureData.Width,
                     mapTextureData.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mapTextureData.Scan0);
 
-                mapTexture.UnlockBits(mapTextureData); // release the data            
-                
+                mapTexture.UnlockBits(mapTextureData); // release the data                            
            }
+
+
         }
     }
 }
