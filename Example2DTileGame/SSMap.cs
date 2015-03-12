@@ -86,7 +86,7 @@ namespace Example2DTileGame
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-            loadTexture("jrpgbrick"); 
+            loadTexture("UV-testmap.png"); 
 		}
 
 		private void setupMesh() {
@@ -634,10 +634,10 @@ namespace Example2DTileGame
 
             // this is the SimpleScene way...
             var ctx = new SSAssetManager.Context("maptextures");
-            myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName + ".png");
+            myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName);
 
             // this is the hard way....            
-            string fullPath = @"..\..\Assets\maptextures\" + fileName + ".png";
+            string fullPath = @"..\..\Assets\maptextures\" + fileName;
             if (!File.Exists(fullPath)) {
                 throw new Exception("no such file: " + fullPath);
             } else {
