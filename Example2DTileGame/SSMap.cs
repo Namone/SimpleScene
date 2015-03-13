@@ -45,14 +45,14 @@ namespace Example2DTileGame
             public Color4 Color;
             public Vector3 triangleFaceNormal;
             public Vector3 averageNormal;
-            public Vector2 uvCoord; // 2D texture coordinate
+            public Vector2 uvCoord;
 
             public VertexData(Vector3 pos, Color4 color, Vector3 normal, Vector2 uv)
             {
                 this.Pos = pos;
                 this.Color = color;
                 this.triangleFaceNormal = normal;
-                this.averageNormal = new Vector3(0, 0, 0);
+                this.averageNormal = new Vector3(5, 0, 0);
                 this.uvCoord = uv;
             }
 
@@ -266,11 +266,12 @@ namespace Example2DTileGame
 		{
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
-            float uvX = 0, uvY = 0;
+            float uvX = 0;
+            float uvY = 0;
             // Add the triangle to the ground mesh
             groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, new Vector2(uvX, uvY))); // Add point 1
-            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, new Vector2(uvX, uvY + 1))); // Add point 2 (middle/height)
-            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, new Vector2(uvX + 1, uvY))); // Add point 3
+            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, new Vector2(uvX + 1, uvY))); // Add point 2 (middle/height)
+            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, new Vector2(uvX, uvY + 1))); // Add point 3
 
 			// accumulate the triangle normal for all three points. (later we will compute average normal)
 			accumulateTriNormal(tp0, triNormal);
@@ -359,13 +360,15 @@ namespace Example2DTileGame
             }
             GL.End();
 
+            loadTexture("jrpgbrick"); // Load the texture we want to use before rendering
             // step 3. Draw the triangle 'ground' mesh
             GL.Begin(PrimitiveType.Triangles);
             {
-                loadTexture("jrpgbrick"); 
+                
                 foreach (VertexData v in groundMesh_Tri) {
-					GL.Normal3 (v.averageNormal);
+					GL.Normal3 (v.averageNormal); 
                     GL.Color4(v.Color);
+                    GL.TexCoord2(v.uvCoord);
 					GL.Vertex3(v.Pos);
 
 				}
@@ -603,7 +606,7 @@ namespace Example2DTileGame
         //Texture Loading//
         //////////////////
 
-        public void loadTexture(string fileName) {
+        public int loadTexture(string fileName) {
 
             // Check to make sure the file exists before trying to load it
             if (File.Exists(@"..\" + fileName + ".png")) {
@@ -615,17 +618,22 @@ namespace Example2DTileGame
                     System.Drawing.Imaging.ImageLockMode.ReadOnly,
                     System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-                int Texture = GL.GenTexture();
-
-                GL.GenTextures(1, out Texture);
-                GL.BindTexture(TextureTarget.Texture2D, Texture);
+                int textId = GL.GenTexture();
+                GL.GenTextures(1, out textId);
+                GL.BindTexture(TextureTarget.Texture2D, textId);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, mapTextureData.Width,
                     mapTextureData.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mapTextureData.Scan0);
 
-                mapTexture.UnlockBits(mapTextureData); // release the data            
+                mapTexture.UnlockBits(mapTextureData); // release the data  
+
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D); // Make a 2D mipmap
+                Console.WriteLine("Info: Texture ID => " + textId);
+                return textId;
                 
            }
+
+            return -1;
         }
     }
 }
