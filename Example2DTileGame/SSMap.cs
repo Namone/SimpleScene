@@ -252,18 +252,25 @@ namespace Example2DTileGame
             //----------------------------------------------------
 
             // step 2. add Triangles to groundMesh_Tri
-             
+
+            // UV Coordinates for texture mapping
+            var uv0 = new Vector2(0, 0); // bottom-left
+            var uv1 = new Vector2(0, 1); // top-left
+            var uv2 = new Vector2(1, 0); // bottom-right
+            var uv3 = new Vector2(1, 1); // top-right
+            var uvMiddle = new Vector2(0.5f, 0.5f); // middle
+
             // bottom-left : middle : top-left
-			storeTriangle(p0,middle,p1);
+			storeTriangle(p0, middle, p1, uv1, uvMiddle, uv0);
 
 			// top-left : middle : top-right
-			storeTriangle(p1,middle,p3);
+			storeTriangle(p1, middle, p3, uv0, uvMiddle, uv2);
 
 			// top-right : middle : bottom-right
-			storeTriangle(p3,middle,p2);
+			storeTriangle(p3, middle, p2, uv2, uvMiddle, uv3);
 
             // bottom-right: middle : bottom-left
-			storeTriangle(p2,middle,p0);
+			storeTriangle(p2, middle, p0, uv3, uvMiddle, uv1);
         }
 
 		/// <summary>
@@ -272,15 +279,15 @@ namespace Example2DTileGame
 		/// <param name="tp0">Tp0.</param>
 		/// <param name="tp1">Tp1.</param>
 		/// <param name="tp2">Tp2.</param>
-		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2) 
+		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2, Vector2 uv0, Vector2 uvMiddle, Vector2 uv1) 
 		{
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
-            float uvX = 0, uvY = 0;
+            
             // Add the triangle to the ground mesh
-            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, new Vector2(uvX, uvY))); // Add point 1
-            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, new Vector2(uvX, uvY + 1))); // Add point 2 (middle/height)
-            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, new Vector2(uvX + 1, uvY))); // Add point 3
+            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, uv0)); // Add point 1
+            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, uvMiddle)); // Add point 2 (middle/height)
+            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, uv1)); // Add point 3
 
 			// accumulate the triangle normal for all three points. (later we will compute average normal)
 			accumulateTriNormal(tp0, triNormal);
@@ -390,7 +397,7 @@ namespace Example2DTileGame
                 foreach (VertexData v in groundMesh_Tri) {
                     // first, attributes..
 					GL.Normal3 (v.averageNormal);
-                    GL.Color4(v.Color);
+                    GL.Color4(Color.White);
                     GL.TexCoord2(v.uvCoord);
 
                     // last, vertex...
