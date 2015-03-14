@@ -229,7 +229,7 @@ namespace Example2DTileGame
         /// <param name="p2">Bottom-right corner</param>
         /// <param name="p3">Top-right corner</param>
         /// <param name="middle">Middle of square drawn</param>
-        public void addToMapArray(Vector3 p0, Vector3 p1,
+        public void addToMapArray(Vector3 p0, Vector3 p1, 
             Vector3 p2, Vector3 p3, Vector3 middle)
         {
             
@@ -252,25 +252,18 @@ namespace Example2DTileGame
             //----------------------------------------------------
 
             // step 2. add Triangles to groundMesh_Tri
-
-            // UV Coordinates for texture mapping
-            var uv0 = new Vector2(0, 0); // bottom-left
-            var uv1 = new Vector2(0, 1); // top-left
-            var uv2 = new Vector2(1, 0); // bottom-right
-            var uv3 = new Vector2(1, 1); // top-right
-            var uvMiddle = new Vector2(0.5f, 0.5f); // middle
-
+             
             // bottom-left : middle : top-left
-			storeTriangle(p0, middle, p1, uv1, uvMiddle, uv0);
+			storeTriangle(p0,middle,p1);
 
 			// top-left : middle : top-right
-			storeTriangle(p1, middle, p3, uv0, uvMiddle, uv2);
+			storeTriangle(p1,middle,p3);
 
 			// top-right : middle : bottom-right
-			storeTriangle(p3, middle, p2, uv2, uvMiddle, uv3);
+			storeTriangle(p3,middle,p2);
 
             // bottom-right: middle : bottom-left
-			storeTriangle(p2, middle, p0, uv3, uvMiddle, uv1);
+			storeTriangle(p2,middle,p0);
         }
 
 		/// <summary>
@@ -279,15 +272,15 @@ namespace Example2DTileGame
 		/// <param name="tp0">Tp0.</param>
 		/// <param name="tp1">Tp1.</param>
 		/// <param name="tp2">Tp2.</param>
-		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2, Vector2 uv0, Vector2 uvMiddle, Vector2 uv1) 
+		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2) 
 		{
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
             float uvX = 0, uvY = 0;
             // Add the triangle to the ground mesh
-            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, uv0)); // Add point 1
-            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, uvMiddle)); // Add point 2 (middle/height)
-            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, uv1)); // Add point 3
+            groundMesh_Tri.Add(new VertexData(tp0, colorForHeight(tp0.Y), triNormal, new Vector2(uvX, uvY))); // Add point 1
+            groundMesh_Tri.Add(new VertexData(tp1, colorForHeight(tp1.Y), triNormal, new Vector2(uvX, uvY + 1))); // Add point 2 (middle/height)
+            groundMesh_Tri.Add(new VertexData(tp2, colorForHeight(tp2.Y), triNormal, new Vector2(uvX + 1, uvY))); // Add point 3
 
 			// accumulate the triangle normal for all three points. (later we will compute average normal)
 			accumulateTriNormal(tp0, triNormal);
@@ -397,7 +390,7 @@ namespace Example2DTileGame
                 foreach (VertexData v in groundMesh_Tri) {
                     // first, attributes..
 					GL.Normal3 (v.averageNormal);
-                    GL.Color4(Color.White);
+                    GL.Color4(v.Color);
                     GL.TexCoord2(v.uvCoord);
 
                     // last, vertex...
@@ -646,11 +639,10 @@ namespace Example2DTileGame
             // this is the hard way....            
             string fullPath = @"..\..\Assets\maptextures\" + fileName;
             if (!File.Exists(fullPath)) {
-                throw new Exception("No such file: " + fullPath);
+                throw new Exception("no such file: " + fullPath);
             } else {
                 Bitmap mapTexture = new Bitmap(fullPath);
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.Enable(EnableCap.Texture2D);
+
                 // Load the bitmap into mapTextureData
                 System.Drawing.Imaging.BitmapData mapTextureData = mapTexture.LockBits(
                     new Rectangle(0, 0, mapTexture.Width, mapTexture.Height), 
@@ -658,21 +650,11 @@ namespace Example2DTileGame
                     System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
                 gl_map_texture_id = GL.GenTexture();
+                
+                GL.BindTexture(TextureTarget.Texture2D, gl_map_texture_id);
 
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
-                // this assumes mipmaps are present...
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
-
-                GL.TexImage2D(TextureTarget.Texture2D,
-                    0, 
-                    PixelInternalFormat.Rgb, 
-                    mapTextureData.Width,
-                    mapTextureData.Height, 
-                    0, 
-                    PixelFormat.Bgr, 
-                    PixelType.UnsignedByte, 
-                    mapTextureData.Scan0);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, mapTextureData.Width,
+                    mapTextureData.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mapTextureData.Scan0);
 
                 mapTexture.UnlockBits(mapTextureData); // release the data                            
            }
