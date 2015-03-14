@@ -561,7 +561,7 @@ namespace Example2DTileGame
         public void saveMap() {
             // Formatting
             XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
-            using (XmlWriter xmlWriter = XmlWriter.Create(@"..\mapSave.xml", xmlSettings)) {
+            using (XmlWriter xmlWriter = XmlWriter.Create(@"../mapSave.xml", xmlSettings)) {
 
                 xmlWriter.WriteStartDocument(); // Start writing  
                 xmlWriter.WriteStartElement("MapTiles");
@@ -594,7 +594,7 @@ namespace Example2DTileGame
             // Read the file - assigning values as we go
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = true;
-            using (XmlReader xmlReader = XmlReader.Create(@"..\mapSave.xml", settings)) {
+            using (XmlReader xmlReader = XmlReader.Create(@"../mapSave.xml", settings)) {
 
                         while (xmlReader.Read()) {
                             switch (xmlReader.Name) {
@@ -621,7 +621,7 @@ namespace Example2DTileGame
         /// Delete map-save file and generates new map
         /// </summary>
         public void deleteMapSave() {
-            File.Delete(@"..\mapSave.xml");
+            File.Delete(@"../mapSave.xml");
             Console.WriteLine("Info: Map-save deleted!");
             constructMap();
         }
@@ -637,7 +637,7 @@ namespace Example2DTileGame
             myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName);
 
             // this is the hard way....            
-            string fullPath = @"..\..\Assets\maptextures\" + fileName;
+            string fullPath = @"../../Assets/maptextures/" + fileName;
             if (!File.Exists(fullPath)) {
                 throw new Exception("no such file: " + fullPath);
             } else {
