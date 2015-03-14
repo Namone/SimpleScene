@@ -64,8 +64,8 @@ namespace SimpleScene
 		 
 			//Code to get the data to the OpenGL Driver
 		  
-			GL.Enable (EnableCap.Texture2D);
 			GL.ActiveTexture (TextureUnit.Texture0);
+            GL.Enable(EnableCap.Texture2D);
 		   
 			//tell OpenGL that this is a 2D texture
 			GL.BindTexture (TextureTarget.Texture2D, _glTextureID);
@@ -130,9 +130,9 @@ namespace SimpleScene
 			byte[] buf = TextureBitmap.GetBuffer ();			
 		 
 			//Code to get the data to the OpenGL Driver
-		  
-			GL.Enable (EnableCap.Texture2D);
+		  			
 			GL.ActiveTexture (TextureUnit.Texture0);
+            GL.Enable(EnableCap.Texture2D);
 		   
 			//tell OpenGL that this is a 2D texture
 			GL.BindTexture (TextureTarget.Texture2D, _glTextureID);
