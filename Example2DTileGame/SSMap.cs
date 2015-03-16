@@ -25,7 +25,6 @@ namespace Example2DTileGame
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
         
-        int gl_map_texture_id = -1;
         SSTexture myTex;        
 
         // 1st value = Key
@@ -382,15 +381,10 @@ namespace Example2DTileGame
             GL.Disable(EnableCap.Lighting);
             
             GL.ActiveTexture(TextureUnit.Texture0); // select texture unit 0
-            GL.Enable(EnableCap.Texture2D);         // enable the texture unit            
-
-            if (false) {
-                // use the texture we loaded the "hard way"
-                GL.BindTexture(TextureTarget.Texture2D,gl_map_texture_id);
-            } else {
-                // use the texture we loaded the "easy way"
-                GL.BindTexture(TextureTarget.Texture2D, myTex.TextureID);
-            }
+            GL.Enable(EnableCap.Texture2D);         // enable the texture unit   
+         
+            // use the texture we loaded the "easy way"
+            GL.BindTexture(TextureTarget.Texture2D, myTex.TextureID);
 
             GL.Begin(PrimitiveType.Triangles);
             {                
@@ -642,29 +636,6 @@ namespace Example2DTileGame
             // this is the SimpleScene way...
             var ctx = new SSAssetManager.Context("maptextures");
             myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName);
-
-            // this is the hard way....            
-            string fullPath = @"../../Assets/maptextures/" + fileName;
-            if (!File.Exists(fullPath)) {
-                throw new Exception("no such file: " + fullPath);
-            } else {
-                Bitmap mapTexture = new Bitmap(fullPath);
-
-                // Load the bitmap into mapTextureData
-                System.Drawing.Imaging.BitmapData mapTextureData = mapTexture.LockBits(
-                    new Rectangle(0, 0, mapTexture.Width, mapTexture.Height), 
-                    System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-                gl_map_texture_id = GL.GenTexture();
-                
-                GL.BindTexture(TextureTarget.Texture2D, gl_map_texture_id);
-
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, mapTextureData.Width,
-                    mapTextureData.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mapTextureData.Scan0);
-
-                mapTexture.UnlockBits(mapTextureData); // release the data                            
-           }
 
 
         }
