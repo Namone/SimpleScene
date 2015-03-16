@@ -10,23 +10,28 @@ namespace Example2DTileGame
 {
     public class SpriteSheet
     {
-        int gridWidth,gridHeight;
+        float tileWidth, tileHeight;
 
-        public SpriteSheet(int numTilesWide,int numTilesHigh) {
-            this.gridWidth = numTilesWide;
-            this.gridHeight = numTilesHigh;
+        public SpriteSheet(int numPixelsWide,int numPixelsHigh) {
+            this.tileWidth = numPixelsWide;
+            this.tileHeight = numPixelsHigh;
         }
 
         public RectangleF getTileBounds(int tileID) {
 
             // My UV coordinates
-            float GLX = tileID / gridWidth; 
-            float GLY = tileID / gridHeight;
+            float GLX = tileID / tileWidth; // Percentage of the width
+            float GLY = tileID / tileHeight; // Percentage of the height
 
-            float boundW = GLX * 2;
-            float boundH = GLY * 2;
+            float boundX = GLX * 2; // Move 'box' over to other tiles based on ID...
+            float boundY = GLY * 2;
+            float boxW = 1f / tileWidth; // 100% / width
+            float boxH = 1f / tileHeight; // 100% / height
 
-            RectangleF bounds = new RectangleF(GLX, GLY, boundW, boundH);
+            PointF xyLocation = new PointF (boundX, boundY);
+            SizeF boxSize = new SizeF(boxW, boxH);
+
+            RectangleF bounds = new RectangleF(xyLocation, boxSize);
 
             return bounds;
         }
