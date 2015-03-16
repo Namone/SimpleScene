@@ -19,17 +19,14 @@ namespace Example2DTileGame
 
         public RectangleF getTileBounds(int tileID) {
 
-            // TODO: implement this
-            float xGLCoordinate = tileID / 12;
-            float yGLCoordinate = 0; // I'm not too worried about the Y direction right now..
+            // My UV coordinates
+            float GLX = tileID / gridWidth; 
+            float GLY = tileID / gridHeight;
 
-            // Have to add up all sides of tiles...
-            // given the tileID, calculate the opengl 0.0-1.0 coordinate space location of the bounds
-            // of that tile inside the sprite sheet
-            PointF location = new PointF(xGLCoordinate, yGLCoordinate);
-            SizeF boxSize = new SizeF(tileWidth, tileHeight);
+            float boundX = GLX * 2;
+            float boundY = GLY * 2;
 
-            RectangleF bounds = new RectangleF(location, boxSize);
+            RectangleF bounds = new RectangleF(GLX, GLY, boundX, boundY);
 
             return bounds;
         }

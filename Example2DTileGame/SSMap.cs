@@ -85,7 +85,7 @@ namespace Example2DTileGame
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-            loadTexture("RPG_Tiles_01.png"); 
+            loadTexture("jrpgpath.png"); 
 		}
 
 		private void setupMesh() {
@@ -251,7 +251,7 @@ namespace Example2DTileGame
             //----------------------------------------------------
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
-            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
+            SpriteSheet spriteSheet = new SpriteSheet(2, 2);
             RectangleF bounds = spriteSheet.getTileBounds(0); // currently using ID of 0 (first tile)
             
             // step 2. add Triangles to groundMesh_Tri
