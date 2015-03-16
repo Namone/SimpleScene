@@ -85,7 +85,7 @@ namespace Example2DTileGame
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-            loadTexture("UV-testmap.png"); 
+            loadTexture("RPG_Tiles_01.png"); 
 		}
 
 		private void setupMesh() {
@@ -249,7 +249,11 @@ namespace Example2DTileGame
 
 
             //----------------------------------------------------
-
+            bool isUsingSpriteSheet = true; // For testing purposes
+            // Add in SpriteSheet
+            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
+            RectangleF bounds = spriteSheet.getTileBounds(0); // currently using ID of 0 (first tile)
+            
             // step 2. add Triangles to groundMesh_Tri
 
             // UV Coordinates for texture mapping
@@ -258,6 +262,15 @@ namespace Example2DTileGame
             var uv2 = new Vector2(1, 0); // bottom-right
             var uv3 = new Vector2(1, 1); // top-right
             var uvMiddle = new Vector2(0.5f, 0.5f); // middle
+
+            if (isUsingSpriteSheet) {
+                // UV Coordinates for spriteSheet bounds
+                uv0 = new Vector2(bounds.X, bounds.Y); // bottom-left
+                uv1 = new Vector2(bounds.X, bounds.Y + bounds.Height); // top-left
+                uv2 = new Vector2(bounds.X + bounds.Width, bounds.Y); // bottom-right
+                uv3 = new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height); // top-right
+                uvMiddle = new Vector2(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2); // middle
+            }
 
             // bottom-left : middle : top-left
 			storeTriangle(p0, middle, p1, uv1, uvMiddle, uv0);
