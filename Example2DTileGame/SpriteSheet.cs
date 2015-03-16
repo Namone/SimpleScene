@@ -23,10 +23,10 @@ namespace Example2DTileGame
             float GLX = tileID / gridWidth; 
             float GLY = tileID / gridHeight;
 
-            float boundX = GLX * 2;
-            float boundY = GLY * 2;
+            float boundW = GLX * 2;
+            float boundH = GLY * 2;
 
-            RectangleF bounds = new RectangleF(GLX, GLY, boundX, boundY);
+            RectangleF bounds = new RectangleF(GLX, GLY, boundW, boundH);
 
             return bounds;
         }
