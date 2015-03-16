@@ -26,26 +26,17 @@ namespace Example2DTileGame
 
         public RectangleF getTileBounds(int xID, int yID) {
 
-            // My UV coordinates
-            GLX = xID / gridWidth; // Percentage of the width
-            GLY = yID / gridHeight; // Percentage of the height
-
-
-            float boundX = GLX * 2; // Move 'box' over to other tiles based on ID...
-            float boundY = GLY * 2;
+            float boundX = xID / gridWidth; // Move 'box' over to other tiles based on ID...
+            float boundY = yID / gridWidth;
             float boxW = 1f / gridWidth; // 100% / width
             float boxH = 1f / gridHeight; // 100% / height
 
-            PointF xyLocation = new PointF (boundX, boundY);
+            PointF xyLocation = new PointF (boundX, boundY); // These end up being my UV coordinates
             SizeF boxSize = new SizeF(boxW, boxH);
 
             RectangleF bounds = new RectangleF(xyLocation, boxSize);
 
             return bounds;
-        }
-
-        public Vector2 getUVCoordinates() {
-            return new Vector2(GLX, GLY);
         }
 
     }
