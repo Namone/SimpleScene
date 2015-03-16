@@ -85,7 +85,7 @@ namespace Example2DTileGame
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-            loadTexture("jrpgpath.png"); 
+            loadTexture("RPG_Tiles_01.png"); 
 		}
 
 		private void setupMesh() {
@@ -251,8 +251,14 @@ namespace Example2DTileGame
             //----------------------------------------------------
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
-            SpriteSheet spriteSheet = new SpriteSheet(2, 2);
-            RectangleF bounds = spriteSheet.getTileBounds(0); // currently using ID of 0 (first tile)
+            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
+            RectangleF bounds = spriteSheet.getTileBounds(7); // currently using ID of 0 (first tile)
+
+            // Get the correct UV Coordinates
+            Vector2 spriteUV = spriteSheet.getUVCoordinates();
+
+            var spriteX = spriteUV.X;
+            var spriteY = spriteUV.Y;
             
             // step 2. add Triangles to groundMesh_Tri
 
@@ -265,11 +271,11 @@ namespace Example2DTileGame
 
             if (isUsingSpriteSheet) {
                 // UV Coordinates for spriteSheet bounds
-                uv0 = new Vector2(bounds.X, bounds.Y); // bottom-left
-                uv1 = new Vector2(bounds.X, bounds.Y + bounds.Height); // top-left
-                uv2 = new Vector2(bounds.X + bounds.Width, bounds.Y); // bottom-right
-                uv3 = new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height); // top-right
-                uvMiddle = new Vector2(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2); // middle
+                uv0 = new Vector2(spriteX, spriteY); // bottom-left
+                uv1 = new Vector2(spriteX, spriteY + bounds.Height); // top-left
+                uv2 = new Vector2(spriteX + bounds.Width, spriteY); // bottom-right
+                uv3 = new Vector2(spriteX + bounds.Width, spriteY + bounds.Height); // top-right
+                uvMiddle = new Vector2(spriteX + bounds.Width / 2, spriteY + bounds.Height / 2); // middle
             }
 
             // bottom-left : middle : top-left
