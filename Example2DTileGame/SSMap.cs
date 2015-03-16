@@ -252,7 +252,10 @@ namespace Example2DTileGame
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
             SpriteSheet spriteSheet = new SpriteSheet(12, 12);
-            RectangleF bounds = spriteSheet.getTileBounds(7); // currently using ID of 0 (first tile)
+            Random rand = new Random();
+            int idx = rand.Next(12);
+            int idy = rand.Next(12);
+            RectangleF bounds = spriteSheet.getTileBounds(idx, idy); // currently using ID of 0 (first tile)
 
             // Get the correct UV Coordinates
             Vector2 spriteUV = spriteSheet.getUVCoordinates();

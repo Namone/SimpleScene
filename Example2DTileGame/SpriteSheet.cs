@@ -20,11 +20,16 @@ namespace Example2DTileGame
             this.gridHeight = numOfTilesY;
         }
 
-        public RectangleF getTileBounds(int tileID) {
+        public SpriteSheet(float tileWidth, float tileHeight) {
+
+        }
+
+        public RectangleF getTileBounds(int xID, int yID) {
 
             // My UV coordinates
-            GLX = tileID / gridWidth; // Percentage of the width
-            GLY = 0; // tileID / gridHeight; // Percentage of the height
+            GLX = xID / gridWidth; // Percentage of the width
+            GLY = yID / gridHeight; // Percentage of the height
+
 
             float boundX = GLX * 2; // Move 'box' over to other tiles based on ID...
             float boundY = GLY * 2;
