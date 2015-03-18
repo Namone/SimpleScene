@@ -43,10 +43,10 @@ namespace Example2DTileGame
         public RectangleF getTileBoundsByGrid(int xID, int yID) {
             // I want to, at some point, change it so only one
             // ID needs to be entered by user...
-            float boundX = xID / gridWidth; // Move 'box' over to other tiles based on ID...
-            float boundY = yID / gridWidth;
-            float boxW = 1f / gridWidth; // 100% / width
-            float boxH = 1f / gridHeight; // 100% / height
+            float boundX = (xID / gridWidth); // Move 'box' over to other tiles based on ID...
+            float boundY = (yID / gridWidth);
+            float boxW = (1f / gridWidth); // 100% / width
+            float boxH = (1f / gridHeight); // 100% / height
 
             PointF xyLocation = new PointF (boundX, boundY); // These end up being my UV coordinates
             SizeF boxSize = new SizeF(boxW, boxH);
