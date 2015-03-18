@@ -256,7 +256,7 @@ namespace Example2DTileGame
             // So we can move through each acix independent of one another
             int idx = rand.Next(12);
             int idy = rand.Next(12);
-            RectangleF bounds = spriteSheet.getTileBounds(idx, idy); // currently using ID of 0 (first tile)
+            RectangleF bounds = spriteSheet.getTileBoundsByGrid(idx, idy); // currently using ID of 0 (first tile)
             
             // step 2. add Triangles to groundMesh_Tri
 
