@@ -13,6 +13,7 @@ namespace Example2DTileGame
     {
         float gridWidth, gridHeight;
         float pixelWidth, pixelHeight;
+        float totalPixelW, totalPixelH;
 
         /// <summary>
         /// For determining tile ID based off of grid width and grid height
@@ -25,13 +26,41 @@ namespace Example2DTileGame
         }
 
         /// <summary>
-        /// For determing tileID based off of tile pixel height and width
+        /// For determing tileID based off of tile pixel height and width - works with getTileById(id)
         /// </summary>
         /// <param name="tileWidth"></param>
         /// <param name="tileHeight"></param>
-        public SpriteSheet(float tileWidth, float tileHeight) {
-            this.pixelWidth = tileWidth;
+        public SpriteSheet(float tileWidth, float tileHeight, float gridW, float gridH) {
+            this.pixelWidth = tileWidth; 
             this.pixelHeight = tileHeight;
+            this.gridWidth = gridW;
+            this.gridHeight = gridH;
+
+            // Get total pixels (ignoring borders, for now)
+            totalPixelW = pixelWidth * gridWidth;
+            totalPixelH = pixelHeight * gridHeight;
+        }
+
+        /// <summary>
+        /// Get tile by ID (0 - ?)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public RectangleF getTileByID(float id) {
+            float boxFractionOfImageX = pixelWidth / totalPixelW;
+            float boxFractionOfImageY = pixelHeight / totalPixelH;
+
+            float boundX = (pixelWidth * id);
+            float boundY = (pixelHeight * id);
+            float boxW = (boundX + boxFractionOfImageX);
+            float boxH = (boundY + boxFractionOfImageY);
+
+            PointF xyLocation = new PointF(boundX, boundY);
+            SizeF boxSize = new SizeF(boxW, boxH);
+
+            RectangleF bounds = new RectangleF(xyLocation, boxSize);
+
+            return bounds;
         }
 
         /// <summary>
@@ -40,7 +69,7 @@ namespace Example2DTileGame
         /// <param name="xID"></param>
         /// <param name="yID"></param>
         /// <returns></returns>
-        public RectangleF getTileBoundsByGrid(int xID, int yID) {
+        public RectangleF getTileByGrid(int xID, int yID) {
             // I want to, at some point, change it so only one
             // ID needs to be entered by user...
             float boundX = (xID / gridWidth); // Move 'box' over to other tiles based on ID...

@@ -251,12 +251,9 @@ namespace Example2DTileGame
             //----------------------------------------------------
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
-            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
+            SpriteSheet spriteSheet = new SpriteSheet(48f, 48f, 12f, 12f);
             Random rand = new Random();
-            // So we can move through each acix independent of one another
-            int idx = rand.Next(12);
-            int idy = rand.Next(12);
-            RectangleF bounds = spriteSheet.getTileBoundsByGrid(idx, idy); // currently using ID of 0 (first tile)
+            RectangleF bounds = spriteSheet.getTileByID(9); 
             
             // step 2. add Triangles to groundMesh_Tri
 
