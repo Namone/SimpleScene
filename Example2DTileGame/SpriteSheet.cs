@@ -47,15 +47,11 @@ namespace Example2DTileGame
         /// <param name="id"></param>
         /// <returns></returns>
         public RectangleF getTileByID(int id) {
-            float boxFractionOfImageX = pixelWidth / totalPixelW; // 0.0833333...
-            float boxFractionOfImageY = pixelHeight / totalPixelH; // 0.0833333...
 
-            pixelWidth *= 0.01f; // Convert to percentage
-            pixelHeight *= 0.01f; // 0.48
-            float boundX = (id / totalPixelW);
-            float boundY = (id / totalPixelH);
-            float boxW = (boxFractionOfImageX); 
-            float boxH = (boxFractionOfImageY);
+            float boundX = (pixelWidth / totalPixelW) * id; // UV coordinates
+            float boundY = (pixelHeight / totalPixelH) * id;
+            float boxW = (pixelWidth / totalPixelW); // Width of 'box' which contains our texture segment
+            float boxH = (pixelHeight / totalPixelH);
 
             PointF xyLocation = new PointF(boundX, boundY);
             SizeF boxSize = new SizeF(boxW, boxH);
@@ -85,6 +81,8 @@ namespace Example2DTileGame
             RectangleF bounds = new RectangleF(xyLocation, boxSize);
 
             return bounds;
+
+            // TODO - Save texture ID's assigned so they can be loaded from a file
         }
 
       
