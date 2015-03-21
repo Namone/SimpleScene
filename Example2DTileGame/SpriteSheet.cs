@@ -46,14 +46,16 @@ namespace Example2DTileGame
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public RectangleF getTileByID(float id) {
-            float boxFractionOfImageX = pixelWidth / totalPixelW;
-            float boxFractionOfImageY = pixelHeight / totalPixelH;
+        public RectangleF getTileByID(int id) {
+            float boxFractionOfImageX = pixelWidth / totalPixelW; // 0.0833333...
+            float boxFractionOfImageY = pixelHeight / totalPixelH; // 0.0833333...
 
-            float boundX = (pixelWidth * id);
-            float boundY = (pixelHeight * id);
-            float boxW = (boundX + boxFractionOfImageX);
-            float boxH = (boundY + boxFractionOfImageY);
+            pixelWidth *= 0.01f; // Convert to percentage
+            pixelHeight *= 0.01f; // 0.48
+            float boundX = (id / totalPixelW);
+            float boundY = (id / totalPixelH);
+            float boxW = (boxFractionOfImageX); 
+            float boxH = (boxFractionOfImageY);
 
             PointF xyLocation = new PointF(boundX, boundY);
             SizeF boxSize = new SizeF(boxW, boxH);
@@ -73,7 +75,7 @@ namespace Example2DTileGame
             // I want to, at some point, change it so only one
             // ID needs to be entered by user...
             float boundX = (xID / gridWidth); // Move 'box' over to other tiles based on ID...
-            float boundY = (yID / gridWidth);
+            float boundY = (yID / gridHeight);
             float boxW = (1f / gridWidth); // 100% / width
             float boxH = (1f / gridHeight); // 100% / height
 

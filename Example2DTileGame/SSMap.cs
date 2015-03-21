@@ -252,8 +252,7 @@ namespace Example2DTileGame
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
             SpriteSheet spriteSheet = new SpriteSheet(48f, 48f, 12f, 12f);
-            Random rand = new Random();
-            RectangleF bounds = spriteSheet.getTileByID(9); 
+            RectangleF bounds = spriteSheet.getTileByID(7); 
             
             // step 2. add Triangles to groundMesh_Tri
 
