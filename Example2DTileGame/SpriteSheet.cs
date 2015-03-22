@@ -14,6 +14,7 @@ namespace Example2DTileGame
         float gridWidth, gridHeight;
         float pixelWidth, pixelHeight;
         float totalPixelW, totalPixelH;
+        int tileID;
 
         /// <summary>
         /// For determining tile ID based off of grid width and grid height
@@ -48,6 +49,7 @@ namespace Example2DTileGame
         /// <returns></returns>
         public RectangleF getTileByID(int id) {
 
+            tileID = id;
             float boundX = (pixelWidth / totalPixelW) * id; // UV coordinates
             float boundY = (pixelHeight / totalPixelH) * id;
             float boxW = (pixelWidth / totalPixelW); // Width of 'box' which contains our texture segment
@@ -85,7 +87,9 @@ namespace Example2DTileGame
             // TODO - Save texture ID's assigned so they can be loaded from a file
         }
 
-      
+        public int getTileID() {
+            return tileID;
+        }
 
     }
 }
