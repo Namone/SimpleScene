@@ -404,8 +404,8 @@ namespace Example2DTileGame
             GL.Enable(EnableCap.Texture2D);         // enable the texture unit   
          
             // use the texture we loaded the "easy way"
-
             GL.BindTexture(TextureTarget.Texture2D, myTex.TextureID);
+
             GL.Begin(PrimitiveType.Triangles);
             {                
                 foreach (VertexData v in groundMesh_Tri) {
