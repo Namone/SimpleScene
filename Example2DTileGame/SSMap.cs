@@ -34,6 +34,7 @@ namespace Example2DTileGame
         // TODO: change these to arrays, then change them to VBOs
         List<LineVertexData> groundMesh_Lines = new List<LineVertexData>(); // List to hold the line-segment verticies
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies'
+        List<int> textureIDs = new List<int>();
 
         public struct MapTile
         {
@@ -111,15 +112,16 @@ namespace Example2DTileGame
                 Console.WriteLine("Info: Map-save found!");
                
                 // Returned array of saved heights
-                float[,] savedHeights = loadMap();
-                
+                float[,] savedHeights = loadHeightMap();
+                textureIDs = loadTextureData(); // Load the texture IDs
+                //Console.WriteLine(textureIDs[0]); testing...
                 for (int i = 0; i < mapHeight.GetLength(0); i++) {
                     for (int j = 0; j < mapHeight.GetLength(1); j++) {
 
                         if (savedHeights[i, j] > 0 || savedHeights[i, j] < 0) {
                             //Console.WriteLine(savedHeights[i, j]);
                         }
-
+                        
                         mapHeight[i, j].height = savedHeights[i, j];
 
                     }
@@ -257,8 +259,17 @@ namespace Example2DTileGame
             RectangleF bounds = new RectangleF();
             SpriteSheet spriteSheet = new SpriteSheet(48f, 48f, 12f, 12f);
             Random rand = new Random();
-            bounds = spriteSheet.getTileByID(rand.Next(12));
-            int textureID = spriteSheet.getTileID();
+            int textureID = 0; // Default
+
+            if (File.Exists(@"..\mapSave.xml")) {
+                foreach (int i in textureIDs) {
+                    textureID = i;
+                }
+            } else {
+                textureID = rand.Next(12);
+            }
+
+            bounds = spriteSheet.getTileByID(textureID);
 
             // step 2. add Triangles to groundMesh_Tri
 
@@ -300,6 +311,7 @@ namespace Example2DTileGame
 		private void storeTriangle(Vector3 tp0, Vector3 tp1, Vector3 tp2, 
             Vector2 uv0, Vector2 uvMiddle, Vector2 uv1, int textureID) 
 		{
+
 			// compute the triangle normal
 			Vector3 triNormal = calcNormal (tp0, tp1, tp2);
             
@@ -598,20 +610,26 @@ namespace Example2DTileGame
                         xmlWriter.WriteEndElement();
                     }
                 }
-
-                xmlWriter.WriteEndElement();
-                xmlWriter.WriteEndDocument();
                 
                 Console.WriteLine("Info: Map Saved!");
+
+                foreach (VertexData v in groundMesh_Tri) {
+                    xmlWriter.WriteStartElement("TextureID");
+                    xmlWriter.WriteAttributeString("id", v.textureID.ToString());
+                    xmlWriter.WriteEndElement();
+                }
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndDocument();
             }
         }
 
         /// <summary>
-        /// Read map data and set equal to mapHeight values
+        /// Load map-height data
         /// </summary>
-        public float[,] loadMap() {
+        public float[,] loadHeightMap() {
 
-            float[,] numStorage = new float [arrayW, arrayH];
+            float[,] heightStorage = new float [arrayW, arrayH];
+            List<int> textIDStorage = new List<int>();
             // Read the file - assigning values as we go
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = true;
@@ -619,23 +637,52 @@ namespace Example2DTileGame
 
                         while (xmlReader.Read()) {
                             switch (xmlReader.Name) {
+                                    // Read maptile data (heights, tyle type, etc.)
                                 case "MapTile":
                                     int x = int.Parse(xmlReader.GetAttribute(0)); // get x coord
                                     int y = int.Parse(xmlReader.GetAttribute(1)); // get y coord
                                     float height = float.Parse(xmlReader.GetAttribute(3)); // get height  
                               
-                                    numStorage[x, y] = height;
+                                    heightStorage[x, y] = height;
 
-                                    break;
-
-                                
+                                    break;                                
 
                     }
                 }
 
-                return numStorage;
+                return heightStorage;
 
-             }             
+             }  
+           
+
+        }
+
+        /// <summary>
+        /// Load texture ID data
+        /// </summary>
+        /// <returns></returns>
+        public List<int> loadTextureData() {
+
+            List<int> textIDStorage = new List<int>();
+            // Read the file - assigning values as we go
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreWhitespace = true;
+            using (XmlReader xmlReader = XmlReader.Create(@"../mapSave.xml", settings)) {
+
+                while (xmlReader.Read()) {
+                    switch (xmlReader.Name) {
+                        // Read maptile data (heights, tyle type, etc.)
+                        case "TextureID":
+                            int id = int.Parse(xmlReader.GetAttribute(0)); // get texture id of tile
+                            textIDStorage.Add(id);
+                            break;
+                    }
+                }
+
+                return textIDStorage;
+
+            }
+
         }
 
         /// <summary>
