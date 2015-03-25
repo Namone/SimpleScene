@@ -68,21 +68,19 @@ namespace Example2DTileGame
         /// </summary>
         /// <returns></returns>
         public RectangleF getTileByGrid(float textureID) {
-            float columnNumber = 0; // default
-            float rowNumber = 0; // Default
-            if (textureID < 12) {
-                columnNumber = (textureID % gridWidth);
-            } else {
-                columnNumber = (textureID % gridWidth) / gridWidth;
-            }
 
+            int columnNumber = (int)(textureID % gridWidth);
+            int rowNumber = (int)(textureID / gridHeight);
+
+            float boxX = (columnNumber / gridWidth);
+            float boxY = (rowNumber / gridHeight);
             float boxW = (1f / gridWidth); // 100% / width
             float boxH = (1f / gridHeight); // 100% / height
 
-            Console.WriteLine("Row Number: " + rowNumber);
-            Console.WriteLine("Column Number: " + columnNumber);
+            Console.WriteLine("Row Number: " + boxX);
+            Console.WriteLine("Column Number: " + boxY);
 
-            PointF xyLocation = new PointF (rowNumber, columnNumber); // These end up being my UV coordinates
+            PointF xyLocation = new PointF (boxX, boxY); // These end up being my UV coordinates
             SizeF boxSize = new SizeF(boxW, boxH);
 
             RectangleF bounds = new RectangleF(xyLocation, boxSize);
