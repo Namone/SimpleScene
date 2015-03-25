@@ -254,7 +254,7 @@ namespace Example2DTileGame
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
             RectangleF bounds = new RectangleF();
-            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
+            SpriteSheet spriteSheet = new SpriteSheet(48, 48, 12, 12);
             Random rand = new Random();
             int textureID = 0; // Default
 
