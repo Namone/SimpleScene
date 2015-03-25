@@ -43,10 +43,10 @@ namespace Example2DTileGame
             int columnNumber = (int)(textureID % gridWidth); // Get column number texture is in
             int rowNumber = (int)(textureID / gridHeight); // Get row number texture is in
 
-            int boundX = 5 + (int)(columnNumber * (tilePixelW + 3)); // UV coordinates
-            int boundY = 5 + (int)(rowNumber * (tilePixelH + 3));
-            float boxW = (tilePixelW - 2); // Width of 'box' which contains our texture segment
-            float boxH = (tilePixelH - 2);
+            int boundX = (int)(columnNumber * (tilePixelW)); // UV coordinates
+            int boundY = (int)(rowNumber * (tilePixelH));
+            float boxW = (tilePixelW); // Width of 'box' which contains our texture segment
+            float boxH = (tilePixelH);
 
             PointF xyLocation = new PointF(boundX, boundY);
             SizeF boxSize = new SizeF(boxW, boxH);
@@ -65,8 +65,8 @@ namespace Example2DTileGame
             int columnNumber = (int)(textureID % gridWidth); // Get column number texture is in
             int rowNumber = (int)(textureID / gridHeight); // Get row number texture is in
 
-            if (false) {
 
+            {
                 float boxX = (columnNumber / gridWidth); // Using the column number, calculate UV coordinate for X axis
                 float boxY = (rowNumber / gridHeight); // Using the row number, calculate the UV coordinate for the Y axis
                 float boxW = (1f / gridWidth); // 100% / width
@@ -76,10 +76,10 @@ namespace Example2DTileGame
                 SizeF boxSize = new SizeF(boxW, boxH);
 
                 RectangleF bounds = new RectangleF(xyLocation, boxSize);
+                Console.WriteLine("TileOld {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
-                return bounds;
-
-            } else {
+            }
+            {
                 RectangleF bounds = getTileByPixel(textureID);
 
                 // Convert to OpenGL coordinate space
@@ -87,7 +87,7 @@ namespace Example2DTileGame
                 PointF xyLocation = new PointF(bounds.X / sheetPixelW, bounds.Y / sheetPixelH); // These end up being my UV coordinates
                 SizeF boxSize = new SizeF(bounds.Width / sheetPixelW, bounds.Height / sheetPixelH);
 
-                RectangleF boundsFloat = new RectangleF(xyLocation, boxSize);;
+                RectangleF boundsFloat = new RectangleF(xyLocation, boxSize); ;
                 Console.WriteLine("TileGrid {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);
                 Console.WriteLine("TileFloat {0} ({1},{2},w{3} h{4})", textureID, boundsFloat.X, boundsFloat.Y, boundsFloat.Width, boundsFloat.Height);
                 return boundsFloat;
