@@ -112,20 +112,10 @@ namespace Example2DTileGame
                 Console.WriteLine("Info: Map-save found!");
                
                 // Returned array of saved heights
-                float[,] savedHeights = loadHeightMap();
+                mapHeight = loadHeightMap();
                 textureIDs = loadTextureData(); // Load the texture IDs
                 //Console.WriteLine(textureIDs[0]); testing...
-                for (int i = 0; i < mapHeight.GetLength(0); i++) {
-                    for (int j = 0; j < mapHeight.GetLength(1); j++) {
-
-                        if (savedHeights[i, j] > 0 || savedHeights[i, j] < 0) {
-                            //Console.WriteLine(savedHeights[i, j]);
-                        }
-                        
-                        mapHeight[i, j].height = savedHeights[i, j];
-
-                    }
-                }
+                
             }
 
             // If we don't already have a saved height map -> make a new map
@@ -139,16 +129,18 @@ namespace Example2DTileGame
                 for (int i = 0; i < mapHeight.GetLength(0) - 1; i++) {
                     for (int j = 0; j < mapHeight.GetLength(1) - 1; j++) {
                         mapHeight[i, j].height = ((float)rand.NextDouble() * MAX_HEIGHT) - MAX_HEIGHT / 2.0f; // Store random heights that are less than max height
+                        mapHeight[i, j].tileType = 22; // Grass tile
                     }
                 }
 
                 // Relax the data 
                 {
-                    MapTile[,] tHeights = new MapTile[arrayW, arrayH];
+                    float[,] tHeights = new float[arrayW, arrayH];
 
                     for (int num = 0; num < 4; num++) {
                         for (int i = 1; i < mapHeight.GetLength(0) - 1; i++) {
                             for (int j = 1; j < mapHeight.GetLength(1) - 1; j++) {
+
                                 float h1 = mapHeight[i + 0, j - 1].height;
                                 float h2 = mapHeight[i - 1, j + 0].height;
                                 float h3 = mapHeight[i + 1, j + 0].height;
@@ -157,11 +149,16 @@ namespace Example2DTileGame
                                 totalHeight = h1 + h2 + h3 + h4;
                                 avgHeight = totalHeight / 4;
 
-                                tHeights[i, j].height = avgHeight;
+                                tHeights[i, j] = avgHeight;
                             }
                         }
-
-                        mapHeight = tHeights; // Set array used for drawing to the new values in the temp array
+                        // Copy heights back to map height
+                        for (int i = 0; i < mapHeight.GetLength(0); i++) {
+                            for (int j = 0; j < mapHeight.GetLength(1); j++) {                                
+                                mapHeight[i, j].height = tHeights[i, j]; // Set array used for drawing to the new values in the temp array
+                            }
+                        }
+                        
                     }
                 }
             }
@@ -197,7 +194,7 @@ namespace Example2DTileGame
                     var middleHeight = (p0.Y + p1.Y + p2.Y + p3.Y) / 4.0f;
                     var middle = new Vector3(squareCX + middleWidthOffset, middleHeight, squareCY + middleWidthOffset);
 
-                    addToMapArray(p0, p1, p2, p3, middle);
+                    addToMapArray(mapHeight[i,j], p0, p1, p2, p3, middle);
 
                 }
             }
@@ -233,7 +230,7 @@ namespace Example2DTileGame
         /// <param name="p2">Bottom-right corner</param>
         /// <param name="p3">Top-right corner</param>
         /// <param name="middle">Middle of square drawn</param>
-        public void addToMapArray(Vector3 p0, Vector3 p1, 
+        public void addToMapArray(MapTile cur, Vector3 p0, Vector3 p1, 
             Vector3 p2, Vector3 p3, Vector3 middle)
         {
             
@@ -266,7 +263,7 @@ namespace Example2DTileGame
             } else {
                 textureID = rand.Next(0);
             }
-            bounds = spriteSheet.getTileByGrid(22);
+            bounds = spriteSheet.getTileByGrid(cur.tileType);
 
             // step 2. add Triangles to groundMesh_Tri
 
@@ -616,7 +613,7 @@ namespace Example2DTileGame
                         xmlWriter.WriteStartElement("MapTile");
                         xmlWriter.WriteAttributeString("x", i.ToString());
                         xmlWriter.WriteAttributeString("y", j.ToString());
-                        xmlWriter.WriteAttributeString("type", mapHeight[i, j].tileType.ToString());
+                        xmlWriter.WriteAttributeString("tileType", mapHeight[i, j].tileType.ToString());
                         xmlWriter.WriteAttributeString("height", mapHeight[i, j].height.ToString());
                         xmlWriter.WriteEndElement();
                     }
@@ -637,9 +634,9 @@ namespace Example2DTileGame
         /// <summary>
         /// Load map-height data
         /// </summary>
-        public float[,] loadHeightMap() {
+        public MapTile[,] loadHeightMap() {
 
-            float[,] heightStorage = new float [arrayW, arrayH];
+            MapTile[,] mapTileStorage = new MapTile [arrayW, arrayH];
             List<int> textIDStorage = new List<int>();
             // Read the file - assigning values as we go
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -650,18 +647,19 @@ namespace Example2DTileGame
                             switch (xmlReader.Name) {
                                     // Read maptile data (heights, tyle type, etc.)
                                 case "MapTile":
-                                    int x = int.Parse(xmlReader.GetAttribute(0)); // get x coord
-                                    int y = int.Parse(xmlReader.GetAttribute(1)); // get y coord
-                                    float height = float.Parse(xmlReader.GetAttribute(3)); // get height  
-                              
-                                    heightStorage[x, y] = height;
+                                    int x = int.Parse(xmlReader.GetAttribute("x")); // get x coord
+                                    int y = int.Parse(xmlReader.GetAttribute("y")); // get y coord
+                                    mapTileStorage[x, y].tileType = int.Parse(xmlReader.GetAttribute("tileType"));
+                                    mapTileStorage[x, y].height = float.Parse(xmlReader.GetAttribute("height")); // get height  
+          
 
-                                    break;                                
+                                    break;
+                                
 
                     }
                 }
 
-                return heightStorage;
+                return mapTileStorage;
 
              }  
            

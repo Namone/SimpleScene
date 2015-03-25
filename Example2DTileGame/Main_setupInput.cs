@@ -79,7 +79,7 @@ namespace Example2DTileGame
                                 mapObject.terraChangeTextureId(hitPoint, 22);
                                 break;
                             case MouseAction.DRAW_GRAVEL:
-                                mapObject.terraChangeTextureId(hitPoint, 23);
+                                mapObject.terraChangeTextureId(hitPoint, 28);
                                 break;
 
                             case MouseAction.ADD_OBJECT:
