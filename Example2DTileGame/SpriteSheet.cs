@@ -12,7 +12,6 @@ namespace Example2DTileGame
     public class SpriteSheet
     {
         float gridWidth, gridHeight;
-        float num_tiles_in_row;
         float pixelWidth, pixelHeight;
         float totalPixelW, totalPixelH;
         int tileID;
@@ -22,11 +21,9 @@ namespace Example2DTileGame
         /// </summary>
         /// <param name="numOfTilesX"></param>
         /// <param name="numOfTilesY"></param>
-        public SpriteSheet(int numOfTilesX, int numOfTilesY) {
+        public SpriteSheet(int numOfTilesX,int numOfTilesY) {
             this.gridWidth = numOfTilesX;
             this.gridHeight = numOfTilesY;
-
-            num_tiles_in_row = numOfTilesX;
         }
 
         /// <summary>
@@ -70,20 +67,22 @@ namespace Example2DTileGame
         /// Calculate, based on input xID and yID, what texture to use
         /// </summary>
         /// <returns></returns>
-        public RectangleF getTileByGrid(int id) {
-
-            // Column = X
-            // Row = y
-            float columnNumber = (id / num_tiles_in_row); // UV coordinates
-            float rowNumber = (id % num_tiles_in_row);
+        public RectangleF getTileByGrid(float textureID) {
+            float columnNumber = 0; // default
+            float rowNumber = 0; // Default
+            if (textureID < 12) {
+                columnNumber = (textureID % gridWidth);
+            } else {
+                columnNumber = (textureID % gridWidth) / gridWidth;
+            }
 
             float boxW = (1f / gridWidth); // 100% / width
             float boxH = (1f / gridHeight); // 100% / height
 
-            Console.WriteLine("Row Number: " + rowNumber); // For some reason it's just pritning out the ID?
+            Console.WriteLine("Row Number: " + rowNumber);
             Console.WriteLine("Column Number: " + columnNumber);
 
-            PointF xyLocation = new PointF (columnNumber, rowNumber); // These end up being my UV coordinates
+            PointF xyLocation = new PointF (rowNumber, columnNumber); // These end up being my UV coordinates
             SizeF boxSize = new SizeF(boxW, boxH);
 
             RectangleF bounds = new RectangleF(xyLocation, boxSize);

@@ -267,7 +267,7 @@ namespace Example2DTileGame
                 textureID = rand.Next(0);
             }
 
-            bounds = spriteSheet.getTileByGrid(6);
+            bounds = spriteSheet.getTileByGrid(13);
 
             // step 2. add Triangles to groundMesh_Tri
 
