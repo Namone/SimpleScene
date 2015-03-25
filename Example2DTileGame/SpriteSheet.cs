@@ -12,6 +12,7 @@ namespace Example2DTileGame
     public class SpriteSheet
     {
         float gridWidth, gridHeight;
+        float num_tiles_in_row;
         float pixelWidth, pixelHeight;
         float totalPixelW, totalPixelH;
         int tileID;
@@ -21,9 +22,11 @@ namespace Example2DTileGame
         /// </summary>
         /// <param name="numOfTilesX"></param>
         /// <param name="numOfTilesY"></param>
-        public SpriteSheet(int numOfTilesX,int numOfTilesY) {
+        public SpriteSheet(int numOfTilesX, int numOfTilesY) {
             this.gridWidth = numOfTilesX;
             this.gridHeight = numOfTilesY;
+
+            num_tiles_in_row = numOfTilesX;
         }
 
         /// <summary>
@@ -47,7 +50,7 @@ namespace Example2DTileGame
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public RectangleF getTileByID(int id) {
+        public RectangleF getTileByPixel(int id) {
 
             tileID = id;
             float boundX = (pixelWidth / totalPixelW) * id; // UV coordinates
@@ -66,18 +69,21 @@ namespace Example2DTileGame
         /// <summary>
         /// Calculate, based on input xID and yID, what texture to use
         /// </summary>
-        /// <param name="xID"></param>
-        /// <param name="yID"></param>
         /// <returns></returns>
-        public RectangleF getTileByGrid(int xID, int yID) {
-            // I want to, at some point, change it so only one
-            // ID needs to be entered by user...
-            float boundX = (xID / gridWidth); // Move 'box' over to other tiles based on ID...
-            float boundY = (yID / gridHeight);
+        public RectangleF getTileByGrid(int id) {
+
+            // Column = X
+            // Row = y
+            float columnNumber = (id / num_tiles_in_row); // UV coordinates
+            float rowNumber = (id % num_tiles_in_row);
+
             float boxW = (1f / gridWidth); // 100% / width
             float boxH = (1f / gridHeight); // 100% / height
 
-            PointF xyLocation = new PointF (boundX, boundY); // These end up being my UV coordinates
+            Console.WriteLine("Row Number: " + rowNumber); // For some reason it's just pritning out the ID?
+            Console.WriteLine("Column Number: " + columnNumber);
+
+            PointF xyLocation = new PointF (columnNumber, rowNumber); // These end up being my UV coordinates
             SizeF boxSize = new SizeF(boxW, boxH);
 
             RectangleF bounds = new RectangleF(xyLocation, boxSize);

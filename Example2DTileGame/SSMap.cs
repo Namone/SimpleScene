@@ -257,19 +257,17 @@ namespace Example2DTileGame
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
             RectangleF bounds = new RectangleF();
-            SpriteSheet spriteSheet = new SpriteSheet(48f, 48f, 12f, 12f);
+            SpriteSheet spriteSheet = new SpriteSheet(12, 12);
             Random rand = new Random();
             int textureID = 0; // Default
 
             if (File.Exists(@"..\mapSave.xml")) {
-                foreach (int i in textureIDs) {
-                    textureID = i;
-                }
+               
             } else {
-                textureID = rand.Next(12);
+                textureID = rand.Next(0);
             }
 
-            bounds = spriteSheet.getTileByID(textureID);
+            bounds = spriteSheet.getTileByGrid(6);
 
             // step 2. add Triangles to groundMesh_Tri
 
