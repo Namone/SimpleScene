@@ -69,11 +69,11 @@ namespace Example2DTileGame
         /// <returns></returns>
         public RectangleF getTileByGrid(float textureID) {
 
-            int columnNumber = (int)(textureID % gridWidth);
-            int rowNumber = (int)(textureID / gridHeight);
+            int columnNumber = (int)(textureID % gridWidth); // Get column number texture is in
+            int rowNumber = (int)(textureID / gridHeight); // Get row number texture is in
 
-            float boxX = (columnNumber / gridWidth);
-            float boxY = (rowNumber / gridHeight);
+            float boxX = (columnNumber / gridWidth); // Using the column number, calculate UV coordinate for X axis
+            float boxY = (rowNumber / gridHeight); // Using the row number, calculate the UV coordinate for the Y axis
             float boxW = (1f / gridWidth); // 100% / width
             float boxH = (1f / gridHeight); // 100% / height
 
