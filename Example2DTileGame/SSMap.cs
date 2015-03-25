@@ -266,8 +266,7 @@ namespace Example2DTileGame
             } else {
                 textureID = rand.Next(0);
             }
-            textureID = rand.Next(143);
-            bounds = spriteSheet.getTileByGrid(textureID);
+            bounds = spriteSheet.getTileByGrid(22);
 
             // step 2. add Triangles to groundMesh_Tri
 
@@ -487,6 +486,20 @@ namespace Example2DTileGame
         Color4 colorForHeight(float height)
         {
             return new Color4((height / MAX_HEIGHT) + 0.2f, height / MAX_HEIGHT * 5, height / MAX_HEIGHT * 5, 0);
+        }
+
+        public void terraChangeTextureId(Vector3 worldSpacePoint, int tileId) {
+            // first convert the world-space point into a 2d Map tile
+
+            float tileSpace_x = worldSpacePoint.X;
+            float tileSpace_y = worldSpacePoint.Z;
+
+            int tileGridSpace_x = (int)(tileSpace_x / squareWidth);
+            int tileGridSpace_y = (int)(tileSpace_y / squareWidth);
+
+            // TODO - bounds-check x & y
+            mapHeight[tileGridSpace_x, tileGridSpace_y].tileType = tileId;
+            generateMeshFromHeightmap();
         }
 
 		/// <summary>

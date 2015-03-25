@@ -17,9 +17,18 @@ namespace Example2DTileGame
 	partial class Example2DTileGame : OpenTK.GameWindow {
 
 		SSObject selectedObject = null;
+        MouseAction currentMode = MouseAction.RAISE_LAND; 
+        protected enum MouseAction
+        {
+            RAISE_LAND,
+            LOWER_LAND,
+            DRAW_GRASS,
+            DRAW_GRAVEL,
+            ADD_OBJECT,
+        }
 		Vector3 hitPoint;
 
-		private void adjustMouseCursor() {
+        private void adjustMouseCursor() {
 			// this doesn't seem to work on MacOS...
 			if (this.mouseRightButtonDown) {
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
@@ -59,13 +68,28 @@ namespace Example2DTileGame
 						hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
 
                         // terra forming
-						mapObject.terraRaiseLandAt(hitPoint, 2.5f); // Terraforming purposes
-                        // add object
-                        if (false) {                         
-						    var obj = new SSObjectCube();
-						    obj.Pos = hitPoint;
-						    scene.AddObject(obj);
+                        switch (currentMode) {
+                            case MouseAction.RAISE_LAND:
+                                mapObject.terraRaiseLandAt(hitPoint, 2.5f); // Terraforming purposes
+                                break;
+                            case MouseAction.LOWER_LAND:
+                                mapObject.terraRaiseLandAt(hitPoint, -2.5f); // Terraforming purposes
+                                break;
+                            case MouseAction.DRAW_GRASS:
+                                mapObject.terraChangeTextureId(hitPoint, 22);
+                                break;
+                            case MouseAction.DRAW_GRAVEL:
+                                mapObject.terraChangeTextureId(hitPoint, 23);
+                                break;
+
+                            case MouseAction.ADD_OBJECT:
+                                var obj = new SSObjectCube();
+                                obj.Pos = hitPoint;
+                                scene.AddObject(obj);
+                                break;
+
                         }
+	
 					}
 				}
 
@@ -96,6 +120,21 @@ namespace Example2DTileGame
 
 			this.KeyPress += (object sender, KeyPressEventArgs e) => {
 				switch (e.KeyChar) {
+                    case '1' :
+                        currentMode = MouseAction.RAISE_LAND;
+                        break;
+                    case '2':
+                        currentMode = MouseAction.LOWER_LAND;
+                        break;
+                    case '3':
+                        currentMode = MouseAction.DRAW_GRASS;
+                        break;
+                    case '4':
+                        currentMode = MouseAction.DRAW_GRAVEL;
+                        break;
+                    case '5':
+                        currentMode = MouseAction.ADD_OBJECT;
+                        break;
 				}
 			};
 		}
