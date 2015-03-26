@@ -21,15 +21,15 @@ namespace Example2DTileGame
         /// </summary>
         /// <param name="tilePixelWidth"></param>
         /// <param name="tilePixelHeight"></param>
-        public SpriteSheet(int tilePixelWidth, int tilePixelHeight, int gridW, int gridH) {
+        public SpriteSheet(int tilePixelWidth, int tilePixelHeight, int gridW, int gridH, int sheetPixelW, int sheetPixelH) {
             this.tilePixelW = tilePixelWidth; 
             this.tilePixelH = tilePixelHeight;
             this.gridWidth = gridW;
             this.gridHeight = gridH;
 
-            // Get total pixels (ignoring borders, for now)
-            sheetPixelW = tilePixelW * gridWidth;
-            sheetPixelH = tilePixelH * gridHeight;
+            // Total sheet dimensions
+            this.sheetPixelW = sheetPixelW;
+            this.sheetPixelH = sheetPixelH;
         }
 
         /// <summary>
@@ -43,10 +43,10 @@ namespace Example2DTileGame
             int columnNumber = (int)(textureID % gridWidth); // Get column number texture is in
             int rowNumber = (int)(textureID / gridHeight); // Get row number texture is in
 
-            int boundX = (int)(columnNumber * (tilePixelW)); // UV coordinates
-            int boundY = (int)(rowNumber * (tilePixelH));
-            float boxW = (tilePixelW); // Width of 'box' which contains our texture segment
-            float boxH = (tilePixelH);
+            int boundX = 5 + (int)(columnNumber * (tilePixelW + 2)); // UV coordinates
+            int boundY = 5 + (int)(rowNumber * (tilePixelH + 2));
+            float boxW = (tilePixelW - 2); // Width of 'box' which contains our texture segment
+            float boxH = (tilePixelH - 2);
 
             PointF xyLocation = new PointF(boundX, boundY);
             SizeF boxSize = new SizeF(boxW, boxH);
@@ -76,7 +76,7 @@ namespace Example2DTileGame
                 SizeF boxSize = new SizeF(boxW, boxH);
 
                 RectangleF bounds = new RectangleF(xyLocation, boxSize);
-                Console.WriteLine("TileOld {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);
+                Console.WriteLine("\nTile F-OLD {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
             }
             {
@@ -88,8 +88,8 @@ namespace Example2DTileGame
                 SizeF boxSize = new SizeF(bounds.Width / sheetPixelW, bounds.Height / sheetPixelH);
 
                 RectangleF boundsFloat = new RectangleF(xyLocation, boxSize); ;
-                Console.WriteLine("TileGrid {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);
-                Console.WriteLine("TileFloat {0} ({1},{2},w{3} h{4})", textureID, boundsFloat.X, boundsFloat.Y, boundsFloat.Width, boundsFloat.Height);
+                Console.WriteLine("Tile F-NEW {0} ({1},{2},w{3} h{4})", textureID, boundsFloat.X, boundsFloat.Y, boundsFloat.Width, boundsFloat.Height);
+                Console.WriteLine("Tile -INT- {0} ({1},{2},w{3} h{4})", textureID, bounds.X, bounds.Y, bounds.Width, bounds.Height);                
                 return boundsFloat;
             }
 

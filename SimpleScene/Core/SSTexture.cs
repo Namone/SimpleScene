@@ -19,6 +19,8 @@ namespace SimpleScene
 	{	
 		private int  _glTextureID;
 		public int TextureID { get { return _glTextureID; } }
+        public int Width = -1;
+        public int Height = -1;
        
         public SSTexture () {
 			//generate one texture and put its ID number into the "_glTextureID" variable
@@ -46,6 +48,9 @@ namespace SimpleScene
 			if (name == null) {
 				name = Bend.WhoCalls.StackTrace ();
 			}
+
+            Width = TextureBitmap.Width;
+            Height = TextureBitmap.Height;
 
 			if (hasAlpha) {
 				TextureData = TextureBitmap.LockBits (
@@ -131,6 +136,9 @@ namespace SimpleScene
 		 
 			//Code to get the data to the OpenGL Driver
 		  			
+            Width = TextureBitmap.Width;
+            Height = TextureBitmap.Height;
+
 			GL.ActiveTexture (TextureUnit.Texture0);
             GL.Enable(EnableCap.Texture2D);
 		   
