@@ -43,10 +43,10 @@ namespace Example2DTileGame
             int columnNumber = (int)(textureID % gridWidth); // Get column number texture is in
             int rowNumber = (int)(textureID / gridHeight); // Get row number texture is in
 
-            int boundX = 5 + (int)(columnNumber * (tilePixelW + 2)); // UV coordinates
-            int boundY = 5 + (int)(rowNumber * (tilePixelH + 2));
-            float boxW = (tilePixelW - 2); // Width of 'box' which contains our texture segment
-            float boxH = (tilePixelH - 2);
+            int boundX = 7 + (int)(columnNumber * (tilePixelW + 2)); // UV coordinates
+            int boundY = 7 + (int)(rowNumber * (tilePixelH + 2));
+            float boxW = (tilePixelW - 6); // Width of 'box' which contains our texture segment
+            float boxH = (tilePixelH - 6);
 
             PointF xyLocation = new PointF(boundX, boundY);
             SizeF boxSize = new SizeF(boxW, boxH);

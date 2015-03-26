@@ -24,6 +24,7 @@ namespace Example2DTileGame
         MapTile[,] mapHeight = new MapTile[arrayW, arrayH];
         public float MAX_HEIGHT = 60.0f;
         float squareWidth = 4;
+        SpriteSheet spriteSheet;
         
         SSTexture myTex;        
 
@@ -85,11 +86,16 @@ namespace Example2DTileGame
 			this.ambientMatColor = new Color4(1.0f,1.0f,1.0f,0.0f);
 			this.emissionMatColor = new Color4(1.0f,1.0f,1.0f,0.0f);
 			this.diffuseMatColor = new Color4(0.0f,0.0f,0.0f,0.0f);
+            
+            // load texture...            
+            myTex = SSAssetManager.GetInstance<SSTexture>(new SSAssetManager.Context("maptextures"), "RPG_Tiles_01.png");
+            
+            spriteSheet = new SpriteSheet(48, 48, 12, 12, myTex.Width, myTex.Height);
 
 			constructMap(); // Construct the map (set points)
 
 			setupMesh();
-            loadTexture("RPG_Tiles_01.png"); 
+            
 		}
 
 		private void setupMesh() {
@@ -253,8 +259,7 @@ namespace Example2DTileGame
             //----------------------------------------------------
             bool isUsingSpriteSheet = true; // For testing purposes
             // Add in SpriteSheet
-            RectangleF bounds = new RectangleF();
-            SpriteSheet spriteSheet = new SpriteSheet(48, 48, 12, 12);
+            RectangleF bounds = new RectangleF();            
             Random rand = new Random();
             int textureID = 0; // Default
 
@@ -390,17 +395,19 @@ namespace Example2DTileGame
             GL.Disable(EnableCap.Lighting);
 
             // End of set-up
-
+            
             // step 2. Draw the wireframe 'outline' of the map
-            GL.Begin(PrimitiveType.Lines);
-            {
-                foreach (LineVertexData v in groundMesh_Lines) {
-                    GL.Color4(Color.Green);
-                    // GL.Color4(v.Color);
-                    GL.Vertex3(v.Pos); // Draw
+            if (false) {
+                GL.Begin(PrimitiveType.Lines);
+                {
+                    foreach (LineVertexData v in groundMesh_Lines) {
+                        GL.Color4(Color.Green);
+                        // GL.Color4(v.Color);
+                        GL.Vertex3(v.Pos); // Draw
+                    }
                 }
+                GL.End();
             }
-            GL.End();
 
             // step 3. Draw the triangle 'ground' mesh
             // setup texture
@@ -701,19 +708,6 @@ namespace Example2DTileGame
             File.Delete(@"../mapSave.xml");
             Console.WriteLine("Info: Map-save deleted!");
             constructMap();
-        }
-
-        ////////////////////
-        //Texture Loading//
-        //////////////////
-
-        public void loadTexture(string fileName) {
-
-            // this is the SimpleScene way...
-            var ctx = new SSAssetManager.Context("maptextures");
-            myTex = SSAssetManager.GetInstance<SSTexture>(ctx, fileName);
-
-
-        }
+        }               
     }
 }
