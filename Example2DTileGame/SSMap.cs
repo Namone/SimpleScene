@@ -35,12 +35,29 @@ namespace Example2DTileGame
         // TODO: change these to arrays, then change them to VBOs
         List<LineVertexData> groundMesh_Lines = new List<LineVertexData>(); // List to hold the line-segment verticies
         List<VertexData> groundMesh_Tri = new List<VertexData>(); // List to hold triangle verticies'
+        List<PlacedObjectData> objectList = new List<PlacedObjectData>(); // List ot hold placed 3D objects
         List<int> textureIDs = new List<int>();
 
         public struct MapTile
         {
             public float height;
             public int tileType;
+        }
+
+        public struct PlacedObjectData
+        {
+            public String name;
+            public float x;
+            public float y;
+            public float z;
+
+            public PlacedObjectData(String objName, float X, float Y, float Z) 
+            {
+                this.name = objName;
+                this.x = X;
+                this.y = Y;
+                this.z = Z;
+            }
         }
 
         struct LineVertexData {
@@ -639,38 +656,40 @@ namespace Example2DTileGame
         }
 
         /// <summary>
+        /// Store object data
+        /// </summary>
+        /// <param name="objName">3D Mesh Name</param>
+        /// <param name="x">Mesh's X coord</param>
+        /// <param name="y">Mesh's Y coord</param>
+        /// <param name="z">Mesh's Z coord</param>
+        public void storeObjectData(String objName, float x, float y, float z) {
+            var obj = new PlacedObjectData(objName, x, y, z);
+            objectList.Add(obj); // Add it to list
+            saveMapObjects(); // Save them after being placed (automatically)
+        }
+
+        /// <summary>
         /// Save map mesh (house, stone, etc) locations for loading
         /// </summary>
         /// <param name="houseList"></param>
         /// <param name="stoneList"></param>
-        public void saveMapObjects(List<SSObject> houseList, List<SSObject> stoneList) {
+        public void saveMapObjects() {
             XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
 
             using (XmlWriter xmlWriter = XmlWriter.Create(@"../objectSave.xml", xmlSettings)) {
                 xmlWriter.WriteStartDocument(); // Start writing 
                 xmlWriter.WriteStartElement("MapObjects");
-                if (houseList.Count > 0) {
-                    for (int i = 0; i < houseList.Count(); i++) {
-                        // Write data from lists...
-                        xmlWriter.WriteStartElement("HouseObject");
-                        xmlWriter.WriteElementString("x", houseList[i].Pos.X.ToString());
-                        xmlWriter.WriteElementString("y", houseList[i].Pos.Y.ToString());
-                        xmlWriter.WriteElementString("z", houseList[i].Pos.Z.ToString());
+                if (objectList.Count > 0) { // Make sure we don't do this if nothing has been placed
+                    for (int i = 0; i < objectList.Count(); i++) {
+                        // Write data from object list...
+                        xmlWriter.WriteStartElement("MeshObject");
+                        xmlWriter.WriteElementString("name", objectList[i].name);
+                        xmlWriter.WriteElementString("x", objectList[i].x.ToString());
+                        xmlWriter.WriteElementString("y", objectList[i].y.ToString());
+                        xmlWriter.WriteElementString("z", objectList[i].z.ToString());
                         xmlWriter.WriteEndElement();
                     }
-                }
-
-                if (stoneList.Count > 0) {
-                    for (int i = 0; i < stoneList.Count(); i++) {
-                        // Write data from lists...
-                        xmlWriter.WriteStartElement("StoneObject");
-                        xmlWriter.WriteElementString("x", stoneList[i].Pos.X.ToString());
-                        xmlWriter.WriteElementString("y", stoneList[i].Pos.Y.ToString());
-                        xmlWriter.WriteElementString("z", stoneList[i].Pos.Z.ToString());
-                        xmlWriter.WriteEndElement();
-                    }
-                }
-                
+                }                
             }
         }
 

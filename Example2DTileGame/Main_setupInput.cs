@@ -105,12 +105,14 @@ namespace Example2DTileGame
                                 listOfHouses.Add(house); // add it to the list
                                 house.Pos = hitPoint;
                                 scene.AddObject(house);
+                                mapObject.storeObjectData("house.obj", house.Pos.X, house.Pos.Y, house.Pos.Z);
                                 break;
                             case MouseAction.ADD_STONE0:
                                 var stone = new SSObjectMesh(stoneMesh0);
                                 listOfStones.Add(stone); // add it to the list
                                 stone.Pos = hitPoint;
                                 scene.AddObject(stone);
+                                mapObject.storeObjectData("stone.obj", stone.Pos.X, stone.Pos.Y, stone.Pos.Z);
                                 break;
 
                         }
@@ -168,7 +170,6 @@ namespace Example2DTileGame
                         break;
                     case 'p': // save
                         mapObject.saveMap();
-                        mapObject.saveMapObjects(listOfHouses, listOfStones);
                         break;
                     case 'o': // delete save
                         mapObject.deleteMapSave();
