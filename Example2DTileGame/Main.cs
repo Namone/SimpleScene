@@ -95,15 +95,6 @@ namespace Example2DTileGame
 				Exit();
 
             // Hotkeys to save/re-generate the map
-
-            if (Keyboard[Key.P]) {
-                mapObject.saveMap();               
-
-            }
-
-            if (Keyboard[Key.O]) {
-                mapObject.deleteMapSave();
-            }
 		}
 
 

@@ -24,7 +24,8 @@ namespace Example2DTileGame
 	partial class Example2DTileGame : OpenTK.GameWindow {
 
 		SSObject selectedObject = null;
-        MouseAction currentMode = MouseAction.RAISE_LAND; 
+        MouseAction currentMode = MouseAction.RAISE_LAND;
+
         protected enum MouseAction
         {
             RAISE_LAND,
@@ -50,7 +51,6 @@ namespace Example2DTileGame
 		}
 
 		public void setupInput() {
-
             List<SSObject> listOfHouses = new List<SSObject>(); // List to contain house objects
             List<SSObject> listOfStones = new List<SSObject>(); // List to contain stone objects
             // Create variables to hold mesh data... could probably put this somewhere else in program
@@ -165,6 +165,13 @@ namespace Example2DTileGame
                         break;
                     case '6':
                         currentMode = MouseAction.ADD_STONE0;
+                        break;
+                    case 'p': // save
+                        mapObject.saveMap();
+                        mapObject.saveMapObjects(listOfHouses, listOfStones);
+                        break;
+                    case 'o': // delete save
+                        mapObject.deleteMapSave();
                         break;
                     case 'w': // move mesh up and down (currently the first house is default)
                         var y = listOfHouses[arrayPos].Pos.Y;

@@ -638,14 +638,39 @@ namespace Example2DTileGame
             }
         }
 
+        /// <summary>
+        /// Save map mesh (house, stone, etc) locations for loading
+        /// </summary>
+        /// <param name="houseList"></param>
+        /// <param name="stoneList"></param>
         public void saveMapObjects(List<SSObject> houseList, List<SSObject> stoneList) {
             XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
 
             using (XmlWriter xmlWriter = XmlWriter.Create(@"../objectSave.xml", xmlSettings)) {
                 xmlWriter.WriteStartDocument(); // Start writing 
                 xmlWriter.WriteStartElement("MapObjects");
+                if (houseList.Count > 0) {
+                    for (int i = 0; i < houseList.Count(); i++) {
+                        // Write data from lists...
+                        xmlWriter.WriteStartElement("HouseObject");
+                        xmlWriter.WriteElementString("x", houseList[i].Pos.X.ToString());
+                        xmlWriter.WriteElementString("y", houseList[i].Pos.Y.ToString());
+                        xmlWriter.WriteElementString("z", houseList[i].Pos.Z.ToString());
+                        xmlWriter.WriteEndElement();
+                    }
+                }
 
-                xmlWriter.WriteEndElement();
+                if (stoneList.Count > 0) {
+                    for (int i = 0; i < stoneList.Count(); i++) {
+                        // Write data from lists...
+                        xmlWriter.WriteStartElement("StoneObject");
+                        xmlWriter.WriteElementString("x", stoneList[i].Pos.X.ToString());
+                        xmlWriter.WriteElementString("y", stoneList[i].Pos.Y.ToString());
+                        xmlWriter.WriteElementString("z", stoneList[i].Pos.Z.ToString());
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+                
             }
         }
 
