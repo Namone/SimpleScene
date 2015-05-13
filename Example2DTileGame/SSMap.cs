@@ -46,17 +46,19 @@ namespace Example2DTileGame
 
         public struct PlacedObjectData
         {
-            public String name;
-            public float x;
-            public float y;
-            public float z;
+            public String srcContext;
+            public String srcFileName;
+            public SSObject meshObject;
 
-            public PlacedObjectData(String objName, float X, float Y, float Z) 
+            public PlacedObjectData(String context, String filename, SSObject obj) 
             {
-                this.name = objName;
-                this.x = X;
-                this.y = Y;
-                this.z = Z;
+                this.srcContext = context;
+                this.srcFileName = filename;
+                this.meshObject = obj;
+            }
+
+            public SSAbstractMesh MeshForObject() {
+                return SSAssetManager.GetInstance<SSMesh_wfOBJ>(srcContext, srcFileName);
             }
         }
 
@@ -662,8 +664,12 @@ namespace Example2DTileGame
         /// <param name="x">Mesh's X coord</param>
         /// <param name="y">Mesh's Y coord</param>
         /// <param name="z">Mesh's Z coord</param>
-        public void storeObjectData(String objName, float x, float y, float z) {
-            var obj = new PlacedObjectData(objName, x, y, z);
+        public void addPlacedObject(String context, String filename, SSScene scene, Vector3 location) {
+            var mesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>(context, filename);
+            var placedObject = new SSObjectMesh(mesh);
+            placedObject.Pos = location;
+            scene.AddObject(placedObject);
+            var obj = new PlacedObjectData(context, filename, placedObject);
             objectList.Add(obj); // Add it to list
             saveMapObjects(); // Save them after being placed (automatically)
         }
@@ -681,10 +687,15 @@ namespace Example2DTileGame
                     for (int i = 0; i < objectList.Count(); i++) {
                         // Write data from object list...
                         xmlWriter.WriteStartElement("MeshObject");
-                        xmlWriter.WriteElementString("name", objectList[i].name);
-                        xmlWriter.WriteElementString("x", objectList[i].x.ToString());
-                        xmlWriter.WriteElementString("y", objectList[i].y.ToString());
-                        xmlWriter.WriteElementString("z", objectList[i].z.ToString());
+                        xmlWriter.WriteStartElement("Type");
+                        xmlWriter.WriteAttributeString("context", objectList[i].srcContext);
+                        xmlWriter.WriteAttributeString("filename", objectList[i].srcFileName);
+                        xmlWriter.WriteEndElement();
+                        xmlWriter.WriteStartElement("Position");
+                        xmlWriter.WriteAttributeString("x", objectList[i].meshObject.Pos.X.ToString());
+                        xmlWriter.WriteAttributeString("y", objectList[i].meshObject.Pos.Y.ToString());
+                        xmlWriter.WriteAttributeString("z", objectList[i].meshObject.Pos.Z.ToString());
+                        xmlWriter.WriteEndElement();
                         xmlWriter.WriteEndElement();
                     }
                 }                
@@ -724,6 +735,14 @@ namespace Example2DTileGame
              }  
            
 
+        }
+
+        /// <summary>
+        /// Load map objects
+        /// </summary>
+        /// <param name="scene"></param>
+        public void loadMapObjects(SSScene scene) {
+            // TODO: Load map objects
         }
 
         /// <summary>

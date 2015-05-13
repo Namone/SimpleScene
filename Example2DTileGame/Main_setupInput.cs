@@ -54,12 +54,6 @@ namespace Example2DTileGame
 
 		public void setupInput() {
 
-            // Create variables to hold mesh data... could probably put this somewhere else in program
-            var houseMesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./houseModel/", "actualhouse.obj");
-            var stoneMesh0 = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./stoneModel/", "stone.obj");
-            /////////////////////////////////////////////////////////////////////////////////////////////
-
-
 			// hook mouse drag input...
 			this.MouseDown += (object sender, MouseButtonEventArgs e) => {
 				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
@@ -115,16 +109,10 @@ namespace Example2DTileGame
                                 mapObject.terraChangeTextureId(hitPoint, 28);
                                 break;
                             case MouseAction.ADD_HOUSE:
-                                var house = new SSObjectMesh(houseMesh);
-                                house.Pos = hitPoint;
-                                scene.AddObject(house);
-                                mapObject.storeObjectData("house.obj", house.Pos.X, house.Pos.Y, house.Pos.Z);
+                                mapObject.addPlacedObject("./houseModel/", "actualhouse.obj", scene, hitPoint);
                                 break;
                             case MouseAction.ADD_STONE0:
-                                var stone = new SSObjectMesh(stoneMesh0);
-                                stone.Pos = hitPoint;
-                                scene.AddObject(stone);
-                                mapObject.storeObjectData("stone.obj", stone.Pos.X, stone.Pos.Y, stone.Pos.Z);
+                                mapObject.addPlacedObject("./stoneModel/", "stone.obj", scene, hitPoint);
                                 break;
 
                         }
