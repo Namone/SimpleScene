@@ -23,7 +23,7 @@ namespace Example2DTileGame
 {
 	partial class Example2DTileGame : OpenTK.GameWindow {
 
-		SSObject selectedObject = null;
+		SSObject mousePickObject = null;
         MouseAction currentMode = MouseAction.RAISE_LAND;
 
         protected enum MouseAction
@@ -50,9 +50,10 @@ namespace Example2DTileGame
 			}
 		}
 
+        SSObject selectedObject = null;
+
 		public void setupInput() {
-            List<SSObject> listOfHouses = new List<SSObject>(); // List to contain house objects
-            List<SSObject> listOfStones = new List<SSObject>(); // List to contain stone objects
+
             // Create variables to hold mesh data... could probably put this somewhere else in program
             var houseMesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./houseModel/", "actualhouse.obj");
             var stoneMesh0 = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./stoneModel/", "stone.obj");
@@ -77,10 +78,23 @@ namespace Example2DTileGame
 				// scene.AddObject(new SSObjectRay(ray));
 
 				// -- this will test for collision with scene objects
-				// selectedObject = scene.Intersect(ref ray);
+				mousePickObject = scene.Intersect(ref ray);
+
+                if (!(mousePickObject is SSMap)) {
+                    // Clearing red selected color
+                    if (selectedObject != null) {
+                        selectedObject.diffuseMatColor = Color.White;
+                        selectedObject = null;
+                    }
+                    // Adding red selection color
+                    if (mousePickObject != null) {
+                        selectedObject = mousePickObject;
+                        mousePickObject.diffuseMatColor = Color.Red;
+                    }
+                }
 
 				// -- this collides the ray with the map mesh
-				if (mapObject != null) {
+				if (mapObject != null && mousePickObject is SSMap) {
 					float distance = 0.0f;
 					if ( mapObject.PreciseIntersect(ref ray, ref distance) ) {
 						// we hit the map mesh! calculate where...
@@ -102,14 +116,12 @@ namespace Example2DTileGame
                                 break;
                             case MouseAction.ADD_HOUSE:
                                 var house = new SSObjectMesh(houseMesh);
-                                listOfHouses.Add(house); // add it to the list
                                 house.Pos = hitPoint;
                                 scene.AddObject(house);
                                 mapObject.storeObjectData("house.obj", house.Pos.X, house.Pos.Y, house.Pos.Z);
                                 break;
                             case MouseAction.ADD_STONE0:
                                 var stone = new SSObjectMesh(stoneMesh0);
-                                listOfStones.Add(stone); // add it to the list
                                 stone.Pos = hitPoint;
                                 scene.AddObject(stone);
                                 mapObject.storeObjectData("stone.obj", stone.Pos.X, stone.Pos.Y, stone.Pos.Z);
@@ -147,7 +159,6 @@ namespace Example2DTileGame
 				} 
 			};
 
-            int arrayPos = 0; // Position in array
 			this.KeyPress += (object sender, KeyPressEventArgs e) => {
 				switch (e.KeyChar) {
                     case '1' :
@@ -175,27 +186,33 @@ namespace Example2DTileGame
                         mapObject.deleteMapSave();
                         break;
                     case 'w': // move mesh up and down (currently the first house is default)
-                        var y = listOfHouses[arrayPos].Pos.Y;
-                        y += 1;
-                        Console.WriteLine("First value: {0}", listOfHouses[arrayPos].Pos.Y);
-                        Vector3 newPosUp = new Vector3(listOfHouses[arrayPos].Pos.X, y, listOfHouses[arrayPos].Pos.Z);
-                        listOfHouses[arrayPos].Pos = newPosUp;
-                        Console.WriteLine("Second value: {0}", listOfHouses[arrayPos].Pos.Y);
+
+                        if (selectedObject != null) {
+
+                            var y = selectedObject.Pos.Y;
+                            y += 1;
+                            Console.WriteLine("First value: {0}", selectedObject.Pos.Y);
+                            Vector3 newPosUp = new Vector3(selectedObject.Pos.X, y, selectedObject.Pos.Z);
+                            selectedObject.Pos = newPosUp;
+                            Console.WriteLine("Second value: {0}", selectedObject.Pos.Y);
+                            
+                        }
+
                         break;
+
                     case 's': // move mesh up and down (currently the first house is default)
-                        var y2 = listOfHouses[arrayPos].Pos.Y;
-                        y2 -= 1;
-                        Console.WriteLine("First value: {0}", listOfHouses[arrayPos].Pos.Y);
-                        Vector3 newPosDown = new Vector3(listOfHouses[arrayPos].Pos.X, y2, listOfHouses[arrayPos].Pos.Z);
-                        listOfHouses[arrayPos].Pos = newPosDown;
-                        Console.WriteLine("Second value: {0}", listOfHouses[arrayPos].Pos.Y);
-                        break;  
-                    case 'e':
-                        arrayPos += 1;
-                        break;
-                    case 'q':
-                        arrayPos -= 1;
-                        break;
+
+                        if (selectedObject != null) {
+                            var y2 = selectedObject.Pos.Y;
+                            y2 -= 1;
+                            Console.WriteLine("First value: {0}", selectedObject.Pos.Y);
+                            Vector3 newPosDown = new Vector3(selectedObject.Pos.X, y2, selectedObject.Pos.Z);
+                            selectedObject.Pos = newPosDown;
+                            Console.WriteLine("Second value: {0}", selectedObject.Pos.Y);
+                         
+                        }
+
+                        break; 
 
 				}
 			};
