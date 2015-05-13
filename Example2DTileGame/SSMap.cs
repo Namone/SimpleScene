@@ -669,10 +669,8 @@ namespace Example2DTileGame
         }
 
         /// <summary>
-        /// Save map mesh (house, stone, etc) locations for loading
+        /// Save map mesh (house, stone, etc) locations to XML file
         /// </summary>
-        /// <param name="houseList"></param>
-        /// <param name="stoneList"></param>
         public void saveMapObjects() {
             XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
 
