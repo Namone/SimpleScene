@@ -638,6 +638,17 @@ namespace Example2DTileGame
             }
         }
 
+        public void saveMapObjects(List<SSObject> houseList, List<SSObject> stoneList) {
+            XmlWriterSettings xmlSettings = new XmlWriterSettings { Indent = true };
+
+            using (XmlWriter xmlWriter = XmlWriter.Create(@"../objectSave.xml", xmlSettings)) {
+                xmlWriter.WriteStartDocument(); // Start writing 
+                xmlWriter.WriteStartElement("MapObjects");
+
+                xmlWriter.WriteEndElement();
+            }
+        }
+
         /// <summary>
         /// Load map-height data
         /// </summary>

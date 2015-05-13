@@ -93,6 +93,17 @@ namespace Example2DTileGame
 
 			if (Keyboard[Key.Escape])
 				Exit();
+
+            // Hotkeys to save/re-generate the map
+
+            if (Keyboard[Key.P]) {
+                mapObject.saveMap();               
+
+            }
+
+            if (Keyboard[Key.O]) {
+                mapObject.deleteMapSave();
+            }
 		}
 
 
@@ -123,7 +134,6 @@ namespace Example2DTileGame
 
                 game.shaderPgm = new SSMainShaderProgram();
 				game.setupInput  ();
-                game.readMap ();
 				game.setupScene ();
 				game.setupHUD ();
                 

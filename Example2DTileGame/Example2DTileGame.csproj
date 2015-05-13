@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="Movement.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Main_readMap.cs" />
     <Compile Include="Main_renderScene.cs" />
     <Compile Include="Main_setupInput.cs" />
     <Compile Include="Main_setupScene.cs" />
@@ -60,6 +59,12 @@
     <Compile Include="TileScene\SSScene2DTiled.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\houseModel\actualhouse.mtl" />
+    <None Include="Assets\houseModel\actualhouse.obj" />
+    <None Include="Assets\houseModel\house.mtl" />
+    <None Include="Assets\houseModel\house.obj" />
+    <None Include="Assets\houseModel\test.mtl" />
+    <None Include="Assets\houseModel\test.obj" />
     <None Include="Assets\mapTileModels\map.mtl" />
     <None Include="Assets\mapTileModels\map.obj" />
     <None Include="Assets\mapTileModels\player.mtl" />
@@ -71,6 +76,8 @@
     <None Include="Assets\mapTileModels\tileplane_1.blend" />
     <None Include="Assets\mapTileModels\tileplane_brick.blend" />
     <None Include="Assets\mapTileModels\tileplane_grass.blend" />
+    <None Include="Assets\stoneModel\stone.mtl" />
+    <None Include="Assets\stoneModel\stone.obj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GDIviaAGGTest\GDIviaAGGTest.csproj">
@@ -83,12 +90,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\houseModel\wildtextures-old-wood-original-file %281%29.jpg" />
+    <Content Include="Assets\houseModel\wildtextures-old-wood-original-file.jpg" />
     <Content Include="Assets\maptextures\jrpgbrick.png" />
     <Content Include="Assets\maptextures\jrpgfield.png" />
     <Content Include="Assets\maptextures\jrpggrass.png" />
     <Content Include="Assets\maptextures\jrpgpath.png" />
     <Content Include="Assets\maptextures\jrpgtree.png" />
     <Content Include="Assets\maptextures\RPG_Tiles_01.png" />
+    <Content Include="Assets\stoneModel\stonetexture.jpg" />
     <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup />

@@ -2,7 +2,14 @@
 // Released to the public domain. Use, modify and relicense at will.
 
 using System;
-
+using System.IO;
+using System.Xml;
+using System.Drawing;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -24,7 +31,10 @@ namespace Example2DTileGame
             LOWER_LAND,
             DRAW_GRASS,
             DRAW_GRAVEL,
-            ADD_OBJECT,
+            ADD_HOUSE,
+            ADD_STONE0,
+            ADD_STONE1, // if I want other types of stones
+            ADD_TREE0,
         }
 		Vector3 hitPoint;
 
@@ -40,6 +50,15 @@ namespace Example2DTileGame
 		}
 
 		public void setupInput() {
+
+            List<SSObject> listOfHouses = new List<SSObject>(); // List to contain house objects
+            List<SSObject> listOfStones = new List<SSObject>(); // List to contain stone objects
+            // Create variables to hold mesh data... could probably put this somewhere else in program
+            var houseMesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./houseModel/", "actualhouse.obj");
+            var stoneMesh0 = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./stoneModel/", "stone.obj");
+            /////////////////////////////////////////////////////////////////////////////////////////////
+
+
 			// hook mouse drag input...
 			this.MouseDown += (object sender, MouseButtonEventArgs e) => {
 				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
@@ -81,19 +100,27 @@ namespace Example2DTileGame
                             case MouseAction.DRAW_GRAVEL:
                                 mapObject.terraChangeTextureId(hitPoint, 28);
                                 break;
-
-                            case MouseAction.ADD_OBJECT:
-                                var obj = new SSObjectCube();
-                                obj.Pos = hitPoint;
-                                scene.AddObject(obj);
+                            case MouseAction.ADD_HOUSE:
+                                var house = new SSObjectMesh(houseMesh);
+                                listOfHouses.Add(house); // add it to the list
+                                house.Pos = hitPoint;
+                                scene.AddObject(house);
+                                break;
+                            case MouseAction.ADD_STONE0:
+                                var stone = new SSObjectMesh(stoneMesh0);
+                                listOfStones.Add(stone); // add it to the list
+                                stone.Pos = hitPoint;
+                                scene.AddObject(stone);
                                 break;
 
                         }
+
 	
 					}
 				}
 
 			};
+
 			this.MouseUp += (object sender, MouseButtonEventArgs e) => { 
 				this.mouseLeftButtonDown = e.Mouse.IsButtonDown(MouseButton.Left);
 				this.mouseRightButtonDown = e.Mouse.IsButtonDown(MouseButton.Right);
@@ -118,6 +145,7 @@ namespace Example2DTileGame
 				} 
 			};
 
+            int arrayPos = 0; // Position in array
 			this.KeyPress += (object sender, KeyPressEventArgs e) => {
 				switch (e.KeyChar) {
                     case '1' :
@@ -133,8 +161,34 @@ namespace Example2DTileGame
                         currentMode = MouseAction.DRAW_GRAVEL;
                         break;
                     case '5':
-                        currentMode = MouseAction.ADD_OBJECT;
+                        currentMode = MouseAction.ADD_HOUSE;
                         break;
+                    case '6':
+                        currentMode = MouseAction.ADD_STONE0;
+                        break;
+                    case 'w': // move mesh up and down (currently the first house is default)
+                        var y = listOfHouses[arrayPos].Pos.Y;
+                        y += 1;
+                        Console.WriteLine("First value: {0}", listOfHouses[arrayPos].Pos.Y);
+                        Vector3 newPosUp = new Vector3(listOfHouses[arrayPos].Pos.X, y, listOfHouses[arrayPos].Pos.Z);
+                        listOfHouses[arrayPos].Pos = newPosUp;
+                        Console.WriteLine("Second value: {0}", listOfHouses[arrayPos].Pos.Y);
+                        break;
+                    case 's': // move mesh up and down (currently the first house is default)
+                        var y2 = listOfHouses[arrayPos].Pos.Y;
+                        y2 -= 1;
+                        Console.WriteLine("First value: {0}", listOfHouses[arrayPos].Pos.Y);
+                        Vector3 newPosDown = new Vector3(listOfHouses[arrayPos].Pos.X, y2, listOfHouses[arrayPos].Pos.Z);
+                        listOfHouses[arrayPos].Pos = newPosDown;
+                        Console.WriteLine("Second value: {0}", listOfHouses[arrayPos].Pos.Y);
+                        break;  
+                    case 'e':
+                        arrayPos += 1;
+                        break;
+                    case 'q':
+                        arrayPos -= 1;
+                        break;
+
 				}
 			};
 		}

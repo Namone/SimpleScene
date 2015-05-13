@@ -30,7 +30,7 @@ namespace Example2DTileGame
               CameraY = 50.0f,
               CameraZ = 0.0f;
 
-        public static SSObject[,] map = new SSObject[mapWidth, mapDepth];        
+        public static SSObject[,] map = new SSObject[mapWidth, mapDepth];
         
         /// <summary>
         /// Setup the scene (to be rendered)
