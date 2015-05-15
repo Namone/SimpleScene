@@ -140,7 +140,7 @@ namespace Example2DTileGame
                 mapHeight = loadHeightMap();
                 textureIDs = loadTextureData(); // Load the texture IDs
                 //Console.WriteLine(textureIDs[0]); testing...
-                
+      
             }
 
             // If we don't already have a saved height map -> make a new map
@@ -708,32 +708,44 @@ namespace Example2DTileGame
         /// <param name="scene"></param>
         public void loadMapObjects(SSScene scene) {
 
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreWhitespace = true;
-            using (XmlReader xmlReader = XmlReader.Create(@"../objectSave.xml", settings)) {
+            if (File.Exists(@"../objectSave.xml")) {
+                float x = 0, y = 0, z = 0;
+                String src = null, filename = null;
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.IgnoreWhitespace = true;
+                using (XmlReader xmlReader = XmlReader.Create(@"../objectSave.xml", settings)) {
 
-                while (xmlReader.Read()) {
+                    while (xmlReader.Read()) {
 
-                    switch (xmlReader.Name) {
-                        case "Type" :
-                            string src = xmlReader.GetAttribute("context");
-                            string filename = xmlReader.GetAttribute("filename");
+                        switch (xmlReader.Name) {
 
-                            Console.WriteLine(src + " - " + filename);
-                            break;
-                        case "Position" :
-                            float x = float.Parse(xmlReader.GetAttribute("x"));
-                            float y = float.Parse(xmlReader.GetAttribute("y"));
-                            float z = float.Parse(xmlReader.GetAttribute("z"));
+                            case "Type":
+                                src = xmlReader.GetAttribute("context");
+                                filename = xmlReader.GetAttribute("filename");
 
-                            Console.WriteLine("X {0}; Y {1}; Z {2}", x, y, z);
-                            break;
+                                Console.WriteLine(src + " - " + filename);
+                                break;
+                            case "Position":
+                                x = float.Parse(xmlReader.GetAttribute("x"));
+                                y = float.Parse(xmlReader.GetAttribute("y"));
+                                z = float.Parse(xmlReader.GetAttribute("z"));
+
+                                Console.WriteLine("X {0}; Y {1}; Z {2}", x, y, z);
+                                break;
+
+                        }
+                        if (!(src == null && filename == null)) {
+                            Vector3 tempPos = new Vector3(x, y, z);
+                            addPlacedObject(src, filename, scene, tempPos);
+                        }
 
                     }
-
                 }
 
-            }
+
+            } else if (!File.Exists(@"../objectSave.xml")) {
+                return; // Do nothing
+            }            
         }
 
         /// <summary>
