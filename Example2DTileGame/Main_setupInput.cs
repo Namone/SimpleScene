@@ -169,6 +169,7 @@ namespace Example2DTileGame
                         break;
                     case 'p': // save
                         mapObject.saveMap();
+                        mapObject.saveMapObjects();
                         break;
                     case 'l': // save
                         mapObject.loadMapObjects(scene);

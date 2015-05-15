@@ -671,7 +671,7 @@ namespace Example2DTileGame
             scene.AddObject(placedObject);
             var obj = new PlacedObjectData(context, filename, placedObject);
             objectList.Add(obj); // Add it to list
-            saveMapObjects(); // Save them after being placed (automatically)
+            //saveMapObjects(); // Save them after being placed (automatically)
         }
 
         /// <summary>
@@ -710,6 +710,7 @@ namespace Example2DTileGame
 
             if (File.Exists(@"../objectSave.xml")) {
                 float x = 0, y = 0, z = 0;
+                Vector3 tempPos = new Vector3(0, 0, 0);
                 String src = null, filename = null;
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = true;
@@ -729,19 +730,18 @@ namespace Example2DTileGame
                                 x = float.Parse(xmlReader.GetAttribute("x"));
                                 y = float.Parse(xmlReader.GetAttribute("y"));
                                 z = float.Parse(xmlReader.GetAttribute("z"));
+                                tempPos = new Vector3(x, y, z);
 
                                 Console.WriteLine("X {0}; Y {1}; Z {2}", x, y, z);
                                 break;
 
                         }
                         if (!(src == null && filename == null)) {
-                            Vector3 tempPos = new Vector3(x, y, z);
                             addPlacedObject(src, filename, scene, tempPos);
-                        }
-
+                        }                         
                     }
-                }
 
+               }
 
             } else if (!File.Exists(@"../objectSave.xml")) {
                 return; // Do nothing
