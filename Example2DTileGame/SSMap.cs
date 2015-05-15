@@ -703,6 +703,40 @@ namespace Example2DTileGame
         }
 
         /// <summary>
+        /// Load map objects
+        /// </summary>
+        /// <param name="scene"></param>
+        public void loadMapObjects(SSScene scene) {
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreWhitespace = true;
+            using (XmlReader xmlReader = XmlReader.Create(@"../objectSave.xml", settings)) {
+
+                while (xmlReader.Read()) {
+
+                    switch (xmlReader.Name) {
+                        case "Type" :
+                            string src = xmlReader.GetAttribute("context");
+                            string filename = xmlReader.GetAttribute("filename");
+
+                            Console.WriteLine(src + " - " + filename);
+                            break;
+                        case "Position" :
+                            float x = float.Parse(xmlReader.GetAttribute("x"));
+                            float y = float.Parse(xmlReader.GetAttribute("y"));
+                            float z = float.Parse(xmlReader.GetAttribute("z"));
+
+                            Console.WriteLine("X {0}; Y {1}; Z {2}", x, y, z);
+                            break;
+
+                    }
+
+                }
+
+            }
+        }
+
+        /// <summary>
         /// Load map-height data
         /// </summary>
         public MapTile[,] loadHeightMap() {
@@ -735,14 +769,6 @@ namespace Example2DTileGame
              }  
            
 
-        }
-
-        /// <summary>
-        /// Load map objects
-        /// </summary>
-        /// <param name="scene"></param>
-        public void loadMapObjects(SSScene scene) {
-            // TODO: Load map objects
         }
 
         /// <summary>

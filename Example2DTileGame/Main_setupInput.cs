@@ -170,6 +170,9 @@ namespace Example2DTileGame
                     case 'p': // save
                         mapObject.saveMap();
                         break;
+                    case 'l': // save
+                        mapObject.loadMapObjects(scene);
+                        break;
                     case 'o': // delete save
                         mapObject.deleteMapSave();
                         break;
@@ -204,7 +207,17 @@ namespace Example2DTileGame
 
 				}
 			};
+
+            this.KeyDown += Example2DTileGame_KeyDown;
+ 
 		}
+
+        void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
+
+            // TODO: W, A, S, D
+
+
+        }
 
 		public Vector3 getHitPoint()
 		{
