@@ -83,12 +83,6 @@ namespace Example2DTileGame
             scene.AddObject(mapObject);
         }
 
-        public void newPlayer(float x, float y)
-        {
-            player = new SSPlayer(x, y);
-            scene.AddObject(player);      
-        } 
-
 		public void setupHUD() {
 			hudScene.ProjectionMatrix = Matrix4.Identity;
 

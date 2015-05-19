@@ -76,6 +76,9 @@
     <None Include="Assets\mapTileModels\tileplane_1.blend" />
     <None Include="Assets\mapTileModels\tileplane_brick.blend" />
     <None Include="Assets\mapTileModels\tileplane_grass.blend" />
+    <None Include="Assets\pigcharacter\pig.3ds" />
+    <None Include="Assets\pigcharacter\pig.mtl" />
+    <None Include="Assets\pigcharacter\pig.obj" />
     <None Include="Assets\stoneModel\stone.mtl" />
     <None Include="Assets\stoneModel\stone.obj" />
   </ItemGroup>
@@ -98,6 +101,9 @@
     <Content Include="Assets\maptextures\jrpgpath.png" />
     <Content Include="Assets\maptextures\jrpgtree.png" />
     <Content Include="Assets\maptextures\RPG_Tiles_01.png" />
+    <Content Include="Assets\pigcharacter\pig.bmp" />
+    <Content Include="Assets\pigcharacter\pig.jpg" />
+    <Content Include="Assets\pigcharacter\readme.txt" />
     <Content Include="Assets\stoneModel\stonetexture.jpg" />
     <Content Include="TODO.txt" />
   </ItemGroup>

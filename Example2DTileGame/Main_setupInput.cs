@@ -36,6 +36,7 @@ namespace Example2DTileGame
             ADD_STONE0,
             ADD_STONE1, // if I want other types of stones
             ADD_TREE0,
+            ADD_PLAYER,
         }
 		Vector3 hitPoint;
 
@@ -114,6 +115,9 @@ namespace Example2DTileGame
                             case MouseAction.ADD_STONE0:
                                 mapObject.addPlacedObject("./stoneModel/", "stone.obj", scene, hitPoint);
                                 break;
+                            case MouseAction.ADD_PLAYER:
+                                SSPlayer player = new SSPlayer(hitPoint, scene); // create player
+                                break;
 
                         }
 
@@ -167,6 +171,9 @@ namespace Example2DTileGame
                     case '6':
                         currentMode = MouseAction.ADD_STONE0;
                         break;
+                    case '7':
+                        currentMode = MouseAction.ADD_PLAYER;
+                        break;
                     case 'p': // save
                         mapObject.saveMap();
                         mapObject.saveMapObjects();
@@ -216,7 +223,6 @@ namespace Example2DTileGame
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
 
             // TODO: W, A, S, D
-
 
         }
 

@@ -75,11 +75,6 @@ namespace Example2DTileGame
 			scene.Update ((float)e.Time);
             camera.Update((float)e.Time);
 
-            if(Keyboard[Key.N])
-            {
-                newPlayer(Mouse.X, Mouse.Y);
-            }
-      
             scene.Render();
 			hudScene.Update ((float)e.Time);
 
