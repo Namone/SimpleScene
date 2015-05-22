@@ -25,6 +25,8 @@ namespace Example2DTileGame
 
 		SSObject mousePickObject = null;
         MouseAction currentMode = MouseAction.RAISE_LAND;
+        SSPlayer ssPlayer;
+        Vector3 newPlayerPos;
 
         protected enum MouseAction
         {
@@ -116,7 +118,9 @@ namespace Example2DTileGame
                                 mapObject.addPlacedObject("./stoneModel/", "stone.obj", scene, hitPoint);
                                 break;
                             case MouseAction.ADD_PLAYER:
-                                SSPlayer player = new SSPlayer(hitPoint, scene); // create player
+                                SSPlayer Player = new SSPlayer(hitPoint, scene); // create player
+                                ssPlayer = Player;
+                                newPlayerPos = ssPlayer.getPlayerPos();
                                 break;
 
                         }
@@ -222,7 +226,28 @@ namespace Example2DTileGame
 
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
 
-            // TODO: W, A, S, D
+            // TODO: Works from a console viewpoint (printing out different Vector3 info) but
+            // Isn't changing location of player model
+            switch (e.Key) {
+                case Key.W :
+                    newPlayerPos.Z += 1f;
+                    ssPlayer.setPlayerPos(newPlayerPos);
+                    break;
+                case Key.S:
+                    newPlayerPos.Z -= 1f;
+                    ssPlayer.setPlayerPos(newPlayerPos);
+                    break;
+                case Key.A:
+                    newPlayerPos.X += 1f;
+                    ssPlayer.setPlayerPos(newPlayerPos);
+                    break;
+                case Key.D:
+                    newPlayerPos.X -= 1f;
+                    ssPlayer.setPlayerPos(newPlayerPos);
+                    break;
+            }
+
+
 
         }
 
