@@ -15,6 +15,7 @@ namespace Example2DTileGame
     class SSPlayer : SSObject
     {
         static int numOfPlayers = 0; // By default
+        SSObject playerObj;
         static readonly int MAX_PLAYERS = 1;
         public Vector3 pos;
         /// <summary>
@@ -25,11 +26,12 @@ namespace Example2DTileGame
         /// <param name="z"></param>
         public SSPlayer(Vector3 playerPosition, SSScene scene)
         {
-            pos = playerPosition;
             if (numOfPlayers < MAX_PLAYERS) {
+                pos = playerPosition;
                 // Create player mesh and add it to scene
                 var playerMesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./pigcharacter/", "pig.obj"); // Player model
                 SSObject playerObject = new SSObjectMesh(playerMesh);
+                playerObj = playerObject;
                 scene.AddObject(playerObject); // add to scene
                 playerObject.Pos = pos;
                 Console.WriteLine("New Player!");
@@ -40,9 +42,13 @@ namespace Example2DTileGame
 
         }
 
+        public void refreshPlayer() {
+
+        }
+
         // Getters and setters
 
-        public Vector3 getPlayerPos() { return pos; }
+        public SSObject getPlayerObject() { return playerObj; }
 
         public void setPlayerPos(Vector3 newPos) { pos = newPos; }
 

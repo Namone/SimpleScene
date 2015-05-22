@@ -26,7 +26,7 @@ namespace Example2DTileGame
 		SSObject mousePickObject = null;
         MouseAction currentMode = MouseAction.RAISE_LAND;
         SSPlayer ssPlayer;
-        Vector3 newPlayerPos;
+        SSObject playerObj;
 
         protected enum MouseAction
         {
@@ -120,7 +120,7 @@ namespace Example2DTileGame
                             case MouseAction.ADD_PLAYER:
                                 SSPlayer Player = new SSPlayer(hitPoint, scene); // create player
                                 ssPlayer = Player;
-                                newPlayerPos = ssPlayer.getPlayerPos();
+                                playerObj = ssPlayer.getPlayerObject();
                                 break;
 
                         }
@@ -228,25 +228,26 @@ namespace Example2DTileGame
 
             // TODO: Works from a console viewpoint (printing out different Vector3 info) but
             // Isn't changing location of player model
-            switch (e.Key) {
-                case Key.W :
-                    newPlayerPos.Z += 1f;
-                    ssPlayer.setPlayerPos(newPlayerPos);
-                    break;
-                case Key.S:
-                    newPlayerPos.Z -= 1f;
-                    ssPlayer.setPlayerPos(newPlayerPos);
-                    break;
-                case Key.A:
-                    newPlayerPos.X += 1f;
-                    ssPlayer.setPlayerPos(newPlayerPos);
-                    break;
-                case Key.D:
-                    newPlayerPos.X -= 1f;
-                    ssPlayer.setPlayerPos(newPlayerPos);
-                    break;
-            }
+            if (playerObj != null) {
+                float x = playerObj.Pos.X,
+                      y = playerObj.Pos.Y,
+                      z = playerObj.Pos.Z;
+                switch (e.Key) {
+                    case Key.W:
+                        playerObj.Pos = new Vector3(x, y, z + 1);
+                        break;
+                    case Key.S:
+                        playerObj.Pos = new Vector3(x, y, z - 1);
+                        break;
+                    case Key.A:
+                        playerObj.Pos = new Vector3(x + 1, y, z);
+                        break;
+                    case Key.D:
+                        playerObj.Pos = new Vector3(x - 1, y, z);
+                        break;
+                }
 
+            }      
 
 
         }
