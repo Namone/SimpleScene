@@ -226,6 +226,8 @@ namespace Example2DTileGame
 
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
 
+            SSObject playerGroundIntersect = null; // interesction point with ground
+
             // TODO: Works from a console viewpoint (printing out different Vector3 info) but
             // Isn't changing location of player model
             if (playerObj != null) {
@@ -234,7 +236,8 @@ namespace Example2DTileGame
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
                     case Key.W:
-                        playerObj.Pos = new Vector3(x, y, z + 1);
+                        playerGroundIntersect = testGroundHeight();
+                        playerObj.Pos = new Vector3(x, y, z + 1);                        
                         break;
                     case Key.S:
                         playerObj.Pos = new Vector3(x, y, z - 1);
@@ -247,9 +250,29 @@ namespace Example2DTileGame
                         break;
                 }
 
-            }      
+                var mapHeights = mapObject.getMapHeights();
+
+                for (int i = 0; i < mapHeights.Length; i++) {
+                    for (int j = 0; j < mapHeights.Length; j++) {
+
+                    }
+
+                }
 
 
+            }
+        }
+
+        public SSObject testGroundHeight() {
+            var clientRect = new System.Drawing.Size(ClientRectangle.Width, ClientRectangle.Height);
+            Vector3 playerLocation = new Vector3(playerObj.Pos.X, playerObj.Pos.Y, playerObj.Pos.Z);
+
+            SSRay playerHitRay
+                = new SSRay(playerLocation, new Vector3(0, -2, 0)); // Ray cast to detect ground beneath player
+            //scene.AddObject(new SSObjectRay(playerHitRay));
+            SSObject groundIntersect = scene.Intersect(ref playerHitRay);
+
+            return groundIntersect;
         }
 
 		public Vector3 getHitPoint()

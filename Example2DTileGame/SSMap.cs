@@ -818,6 +818,10 @@ namespace Example2DTileGame
             File.Delete(@"../mapSave.xml");
             Console.WriteLine("Info: Map-save deleted!");
             constructMap();
-        }               
+        }
+
+        public MapTile[,] getMapHeights() {
+            return mapHeight;
+        }
     }
 }

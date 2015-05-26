@@ -42,10 +42,6 @@ namespace Example2DTileGame
 
         }
 
-        public void refreshPlayer() {
-
-        }
-
         // Getters and setters
 
         public SSObject getPlayerObject() { return playerObj; }
