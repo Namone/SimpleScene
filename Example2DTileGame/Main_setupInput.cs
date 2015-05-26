@@ -226,13 +226,14 @@ namespace Example2DTileGame
 
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
 
-            SSObject playerGroundIntersect = null; // interesction point with ground
+           
 
             // TODO: Works from a console viewpoint (printing out different Vector3 info) but
             // Isn't changing location of player model
             if (playerObj != null) {
+                SSObject playerGroundIntersect = null; // interesction point with ground
                 float x = playerObj.Pos.X,
-                      y = playerObj.Pos.Y,
+                      y = playerGroundIntersect.Pos.Y, // playerGroundIntersect is null
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
                     case Key.W:
@@ -264,13 +265,12 @@ namespace Example2DTileGame
         }
 
         public SSObject testGroundHeight() {
-            var clientRect = new System.Drawing.Size(ClientRectangle.Width, ClientRectangle.Height);
             Vector3 playerLocation = new Vector3(playerObj.Pos.X, playerObj.Pos.Y, playerObj.Pos.Z);
 
             SSRay playerHitRay
                 = new SSRay(playerLocation, new Vector3(0, -2, 0)); // Ray cast to detect ground beneath player
-            //scene.AddObject(new SSObjectRay(playerHitRay));
-            SSObject groundIntersect = scene.Intersect(ref playerHitRay);
+            scene.AddObject(new SSObjectRay(playerHitRay)); // so I can see it
+            SSObject groundIntersect = scene.Intersect(ref playerHitRay); // this is null for some reason
 
             return groundIntersect;
         }
