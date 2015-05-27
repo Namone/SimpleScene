@@ -233,11 +233,12 @@ namespace Example2DTileGame
             if (playerObj != null) {
                 SSObject playerGroundIntersect = null; // interesction point with ground
                 float x = playerObj.Pos.X,
-                      y = playerGroundIntersect.Pos.Y, // playerGroundIntersect is null
+                      y = null, // playerGroundIntersect is null
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
                     case Key.W:
                         playerGroundIntersect = testGroundHeight();
+                        y = playerGroundIntersect.Pos.Y;
                         playerObj.Pos = new Vector3(x, y, z + 1);                        
                         break;
                     case Key.S:
