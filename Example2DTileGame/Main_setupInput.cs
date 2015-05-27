@@ -231,14 +231,15 @@ namespace Example2DTileGame
             // TODO: Works from a console viewpoint (printing out different Vector3 info) but
             // Isn't changing location of player model
             if (playerObj != null) {
-                SSObject playerGroundIntersect = null; // interesction point with ground
+                float rayDistance;
                 float x = playerObj.Pos.X,
-                      y = 0, // playerGroundIntersect is null
+                      y = playerObj.Pos.Y, // playerGroundIntersect is null
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
                     case Key.W:
-                        playerGroundIntersect = testGroundHeight();
-                        y = playerGroundIntersect.Pos.Y;
+                        rayDistance = testGroundHeight();
+                        y = -rayDistance;
+                        //y = playerGroundIntersect.Pos.Y;
                         playerObj.Pos = new Vector3(x, y, z + 1);                        
                         break;
                     case Key.S:
@@ -256,15 +257,18 @@ namespace Example2DTileGame
             }
         }
 
-        public SSObject testGroundHeight() {
+        public float testGroundHeight() {
             Vector3 playerLocation = new Vector3(playerObj.Pos.X, playerObj.Pos.Y, playerObj.Pos.Z);
 
             SSRay playerHitRay
                 = new SSRay(playerLocation, new Vector3(0, -2, 0)); // Ray cast to detect ground beneath player
             scene.AddObject(new SSObjectRay(playerHitRay)); // so I can see it
-            SSObject groundIntersect = scene.Intersect(ref playerHitRay); // this is null for some reason
+            float rayDistance;
+            if (mapObject.Intersect(ref playerHitRay, out rayDistance)) {
+                Console.WriteLine(playerHitRay);
+            }
 
-            return groundIntersect;
+            return rayDistance;
         }
 
 		public Vector3 getHitPoint()
