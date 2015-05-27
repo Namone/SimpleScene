@@ -27,13 +27,12 @@ namespace Example2DTileGame
         public SSPlayer(Vector3 playerPosition, SSScene scene)
         {
             if (numOfPlayers < MAX_PLAYERS) {
-                pos = playerPosition;
                 // Create player mesh and add it to scene
                 var playerMesh = SSAssetManager.GetInstance<SSMesh_wfOBJ>("./pigcharacter/", "pig.obj"); // Player model
                 SSObject playerObject = new SSObjectMesh(playerMesh);
                 playerObj = playerObject;
                 scene.AddObject(playerObject); // add to scene
-                playerObject.Pos = pos;
+                playerObject.Pos = playerPosition;
                 Console.WriteLine("New Player!");
                 numOfPlayers++;
                 ///////////////////////////////////////////////////////////
