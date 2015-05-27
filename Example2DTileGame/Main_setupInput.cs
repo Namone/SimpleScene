@@ -251,15 +251,6 @@ namespace Example2DTileGame
                         break;
                 }
 
-                var mapHeights = mapObject.getMapHeights();
-
-                for (int i = 0; i < mapHeights.Length; i++) {
-                    for (int j = 0; j < mapHeights.Length; j++) {
-
-                    }
-
-                }
-
 
             }
         }
