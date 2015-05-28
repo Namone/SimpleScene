@@ -264,7 +264,8 @@ namespace Example2DTileGame
                 = new SSRay(playerLocation, new Vector3(0, -2, 0)); // Ray cast to detect ground beneath player
             scene.AddObject(new SSObjectRay(playerHitRay)); // so I can see it
             float rayDistance;
-            if (mapObject.Intersect(ref playerHitRay, out rayDistance));            
+
+            if (mapObject.Intersect(ref playerHitRay, out rayDistance)) {}            
 
             return rayDistance;
         }
