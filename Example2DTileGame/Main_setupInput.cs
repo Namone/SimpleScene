@@ -238,7 +238,7 @@ namespace Example2DTileGame
                 switch (e.Key) {
                     case Key.W:
                         rayDistance = testGroundHeight();
-                        y = -rayDistance;
+                        y = -rayDistance; // not working
                         //y = playerGroundIntersect.Pos.Y;
                         playerObj.Pos = new Vector3(x, y, z + 1);                        
                         break;
