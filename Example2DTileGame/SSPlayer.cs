@@ -16,8 +16,7 @@ namespace Example2DTileGame
     {
         static int numOfPlayers = 0; // By default
         SSObject playerObj;
-        static readonly int MAX_PLAYERS = 1;
-        public Vector3 pos;
+        static readonly int MAX_PLAYERS = 1;        
         /// <summary>
         /// For setting position
         /// </summary>
@@ -36,7 +35,7 @@ namespace Example2DTileGame
                 Console.WriteLine("New Player!");
                 numOfPlayers++;
                 ///////////////////////////////////////////////////////////
-                Console.WriteLine(pos);
+                Console.WriteLine(Pos);
             }
 
         }
@@ -44,8 +43,6 @@ namespace Example2DTileGame
         // Getters and setters
 
         public SSObject getPlayerObject() { return playerObj; }
-
-        public void setPlayerPos(Vector3 newPos) { pos = newPos; }
-
+        
     }
 }

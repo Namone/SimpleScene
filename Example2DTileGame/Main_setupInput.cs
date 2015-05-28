@@ -39,8 +39,7 @@ namespace Example2DTileGame
             ADD_STONE1, // if I want other types of stones
             ADD_TREE0,
             ADD_PLAYER,
-        }
-		Vector3 hitPoint;
+        }		
 
         private void adjustMouseCursor() {
 			// this doesn't seem to work on MacOS...
@@ -95,7 +94,7 @@ namespace Example2DTileGame
 					float distance = 0.0f;
 					if ( mapObject.PreciseIntersect(ref ray, ref distance) ) {
 						// we hit the map mesh! calculate where...
-						hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
+						var hitPoint = ray.pos - (ray.dir.Normalized() * (distance - 0.01f));
 
                         // terra forming
                         switch (currentMode) {
@@ -188,7 +187,7 @@ namespace Example2DTileGame
                     case 'o': // delete save
                         mapObject.deleteMapSave();
                         break;
-                    case 'w': // move mesh up and down (currently the first house is default)
+                    case 'r': // move mesh up and down (currently the first house is default)
 
                         if (selectedObject != null) {
 
@@ -203,7 +202,7 @@ namespace Example2DTileGame
 
                         break;
 
-                    case 's': // move mesh up and down (currently the first house is default)
+                    case 'f': // move mesh up and down (currently the first house is default)
 
                         if (selectedObject != null) {
                             var y2 = selectedObject.Pos.Y;
@@ -236,20 +235,17 @@ namespace Example2DTileGame
                       y = playerObj.Pos.Y, // playerGroundIntersect is null
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
-                    case Key.W:
-                        rayDistance = testGroundHeight();
-                        y = -rayDistance; // not working
-                        //y = playerGroundIntersect.Pos.Y;
-                        playerObj.Pos = new Vector3(x, y, z + 1);                        
+                    case Key.W:                                          
+                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z + 1));
                         break;
                     case Key.S:
-                        playerObj.Pos = new Vector3(x, y, z - 1);
+                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z - 1));
                         break;
                     case Key.A:
-                        playerObj.Pos = new Vector3(x + 1, y, z);
+                        playerObj.Pos = testGroundHeight(new Vector3(x + 1, y, z));
                         break;
                     case Key.D:
-                        playerObj.Pos = new Vector3(x - 1, y, z);
+                        playerObj.Pos = testGroundHeight(new Vector3(x - 1, y, z));
                         break;
                 }
 
@@ -257,23 +253,22 @@ namespace Example2DTileGame
             }
         }
 
-        public float testGroundHeight() {
-            Vector3 playerLocation = new Vector3(playerObj.Pos.X, playerObj.Pos.Y, playerObj.Pos.Z);
+        public Vector3 testGroundHeight(Vector3 atLocation) {
 
-            SSRay playerHitRay
-                = new SSRay(playerLocation, new Vector3(0, -2, 0)); // Ray cast to detect ground beneath player
-            scene.AddObject(new SSObjectRay(playerHitRay)); // so I can see it
+            // construct a start point far above the ground, facing down (-UnitY)
+            Vector3 startAboveGround = new Vector3(atLocation.X, 20, atLocation.Z);
+            SSRay ray = new SSRay(startAboveGround, -Vector3.UnitY); // Ray cast to detect ground beneath player
+
+            // debug the ray so we can see it...
+            scene.AddObject(new SSObjectRay(ray)); // so I can see it
+
+            // compute where the ray hit the ground
             float rayDistance;
+            if (mapObject.Intersect(ref ray, out rayDistance)) { }
+            var hitPoint = ray.pos - (ray.dir.Normalized() * (rayDistance - 0.01f));
 
-            if (mapObject.Intersect(ref playerHitRay, out rayDistance)) {}            
-
-            return rayDistance;
+            return hitPoint;
         }
-
-		public Vector3 getHitPoint()
-		{
-			return hitPoint;
-		}
 
 	}
 }
