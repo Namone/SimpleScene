@@ -27,6 +27,7 @@ namespace Example2DTileGame
         MouseAction currentMode = MouseAction.RAISE_LAND;
         SSPlayer ssPlayer;
         SSObject playerObj;
+        bool ableToMove = true; // can the player move?
 
         protected enum MouseAction
         {
@@ -224,9 +225,7 @@ namespace Example2DTileGame
 		}
 
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
-
-           
-
+            var objectList = mapObject.getObjectList(); // list full of map objects (3D objects)
             // TODO: Works from a console viewpoint (printing out different Vector3 info) but
             // Isn't changing location of player model
             if (playerObj != null) {
@@ -235,8 +234,21 @@ namespace Example2DTileGame
                       y = playerObj.Pos.Y, // playerGroundIntersect is null
                       z = playerObj.Pos.Z;
                 switch (e.Key) {
-                    case Key.W:                                          
-                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z + 1));
+                    case Key.W:
+                        // probably more effecient way to do this... only check objects within small range?
+                        for (int i = 0; i < objectList.Count; i++) {
+                            if (objectList[i].meshObject.Pos == playerObj.Pos) {
+                                ableToMove = false; // running into object..
+                            } else {
+                                ableToMove = true;
+                            }
+                        }
+
+                        if (ableToMove) {
+                            playerObj.Pos = testGroundHeight(new Vector3(x, y, z + 1));
+                        }   
+                       
+
                         break;
                     case Key.S:
                         playerObj.Pos = testGroundHeight(new Vector3(x, y, z - 1));

@@ -823,5 +823,9 @@ namespace Example2DTileGame
         public MapTile[,] getMapHeights() {
             return mapHeight;
         }
+
+        public List<PlacedObjectData> getObjectList() {
+            return objectList; // get the list of objects so I can test for collisions...
+        }
     }
 }
