@@ -226,8 +226,6 @@ namespace Example2DTileGame
 
         void Example2DTileGame_KeyDown(object sender, KeyboardKeyEventArgs e) {
             var objectList = mapObject.getObjectList(); // list full of map objects (3D objects)
-            // TODO: Works from a console viewpoint (printing out different Vector3 info) but
-            // Isn't changing location of player model
             if (playerObj != null) {
                 float rayDistance;
                 float x = playerObj.Pos.X,
@@ -237,27 +235,28 @@ namespace Example2DTileGame
                     case Key.W:
                         // probably more effecient way to do this... only check objects within small range?
                         for (int i = 0; i < objectList.Count; i++) {
-                            if (objectList[i].meshObject.Pos == playerObj.Pos) {
+                            if (objectList[i].meshObject.boundingSphere == playerObj.boundingSphere) {
                                 ableToMove = false; // running into object..
                             } else {
                                 ableToMove = true;
                             }
+                            Console.WriteLine("Object number: " + i + " - " + objectList[i].meshObject.Pos);
                         }
 
                         if (ableToMove) {
-                            playerObj.Pos = testGroundHeight(new Vector3(x, y, z + 1));
+                            playerObj.Pos = testGroundHeight(new Vector3(x + 1, y, z));
                         }   
                        
 
                         break;
                     case Key.S:
-                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z - 1));
+                        playerObj.Pos = testGroundHeight(new Vector3(x - 1, y, z));
                         break;
                     case Key.A:
-                        playerObj.Pos = testGroundHeight(new Vector3(x + 1, y, z));
+                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z + 1));
                         break;
                     case Key.D:
-                        playerObj.Pos = testGroundHeight(new Vector3(x - 1, y, z));
+                        playerObj.Pos = testGroundHeight(new Vector3(x, y, z - 1));
                         break;
                 }
 
@@ -272,7 +271,7 @@ namespace Example2DTileGame
             SSRay ray = new SSRay(startAboveGround, -Vector3.UnitY); // Ray cast to detect ground beneath player
 
             // debug the ray so we can see it...
-            scene.AddObject(new SSObjectRay(ray)); // so I can see it
+            //scene.AddObject(new SSObjectRay(ray)); // so I can see it
 
             // compute where the ray hit the ground
             float rayDistance;
